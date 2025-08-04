@@ -129,6 +129,82 @@ class EnhancedMatrixCalculator {
   }
 
   /**
+   * Improved Dot Product for vectors (works with 1x2, 1x3, etc.)
+   */
+  dotProductVectors(vectorA, vectorB) {
+    // Convert matrices to vectors if needed
+    const vecA = this.matrixToVector(vectorA);
+    const vecB = this.matrixToVector(vectorB);
+    
+    if (!Array.isArray(vecA) || !Array.isArray(vecB)) {
+      throw new Error("Inputs must be arrays");
+    }
+    
+    if (vecA.length !== vecB.length) {
+      throw new Error("Vectors must be of the same length");
+    }
+    
+    const result = vecA.reduce((sum, val, idx) => sum + val * vecB[idx], 0);
+    
+    return {
+      operation: 'dot_product',
+      symbol: '·',
+      result: result,
+      matrixA: vectorA,
+      matrixB: vectorB,
+      description: `Vector Dot Product (A · B) = ${result}`
+    };
+  }
+
+  /**
+   * Improved Cross Product for vectors (works with 1x2 and 1x3)
+   */
+  crossProductVectorsImproved(vectorA, vectorB) {
+    // Convert matrices to vectors if needed
+    const vecA = this.matrixToVector(vectorA);
+    const vecB = this.matrixToVector(vectorB);
+    
+    if (!Array.isArray(vecA) || !Array.isArray(vecB)) {
+      throw new Error("Inputs must be arrays");
+    }
+    
+    if (vecA.length !== vecB.length) {
+      throw new Error("Vectors must be of the same length");
+    }
+    
+    let result;
+    let description;
+    
+    if (vecA.length === 2) {
+      // 2D cross product (returns scalar - the z-component)
+      result = vecA[0] * vecB[1] - vecA[1] * vecB[0];
+      description = `2D Cross Product (A × B) = ${result}`;
+    } else if (vecA.length === 3) {
+      // 3D cross product (returns vector)
+      result = [
+        vecA[1] * vecB[2] - vecA[2] * vecB[1],
+        vecA[2] * vecB[0] - vecA[0] * vecB[2],
+        vecA[0] * vecB[1] - vecA[1] * vecB[0]
+      ];
+      description = `3D Cross Product (A × B)`;
+      
+      // Convert back to matrix format for display
+      result = [[result[0]], [result[1]], [result[2]]];
+    } else {
+      throw new Error("Cross product is only defined for 2D or 3D vectors");
+    }
+    
+    return {
+      operation: 'cross_product',
+      symbol: '×',
+      result: result,
+      matrixA: vectorA,
+      matrixB: vectorB,
+      description: description
+    };
+  }
+
+  /**
    * Validate matrices for addition/subtraction (same dimensions required)
    */
   validateMatricesForOperation(matrixA, matrixB, operation) {

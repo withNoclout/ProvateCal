@@ -294,6 +294,13 @@ class IGMatrixCalculatorUI {
     container.style.display = 'block';
     container.classList.add('slide-in');
     
+    // Default to dual matrix mode for vector operations (1x2, 1x3)
+    if (size === '1x2' || size === '1x3') {
+      this.switchMatrixMode('dual');
+    } else {
+      this.switchMatrixMode('single');
+    }
+    
     // Generate matrix grid
     this.generateMatrixGrid(rows, cols);
     
@@ -442,9 +449,19 @@ class IGMatrixCalculatorUI {
     input.placeholder = '0';
     input.step = '0.01';
     
+    // Remove spinner controls and fix styling
+    input.style.appearance = 'textfield';
+    input.style.webkitAppearance = 'none';
+    input.style.mozAppearance = 'textfield';
+    
     // Add input validation and navigation
-    input.addEventListener('input', (e) => this.validateNumericInput(e));
+    input.addEventListener('input', (e) => {
+      e.target.style.backgroundColor = 'var(--surface-black)';
+      e.target.style.color = 'var(--text-primary)';
+      this.validateNumericInput(e);
+    });
     input.addEventListener('keydown', (e) => this.handleMatrixNavigation(e, row, col, matrix));
+    input.addEventListener('wheel', (e) => e.preventDefault());
     
     return input;
   }
@@ -482,14 +499,24 @@ class IGMatrixCalculatorUI {
       coeffInput.style.cssText = `
         width: 80px;
         height: 50px;
-        border: 2px solid var(--ig-gray-300);
+        border: 2px solid var(--glass-border);
         border-radius: var(--radius-lg);
         text-align: center;
         font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-        background: var(--ig-white);
+        background: var(--surface-black);
+        color: var(--text-primary);
         font-size: var(--text-base);
         margin: 0 var(--space-1);
+        -moz-appearance: textfield;
       `;
+      
+      // Remove increment/decrement arrows
+      coeffInput.addEventListener('wheel', (e) => e.preventDefault());
+      coeffInput.oninput = (e) => {
+        e.target.style.backgroundColor = 'var(--surface-black)';
+        e.target.style.color = 'var(--text-primary)';
+        this.validateNumericInput(e);
+      };
       
       const variable = document.createElement('span');
       variable.className = 'variable-label';
@@ -930,7 +957,7 @@ class IGMatrixCalculatorUI {
       case 'dot':
         return calculator.dotProductVectors(matrixA, matrixB);
       case 'cross':
-        return calculator.crossProductVectors(matrixA, matrixB);
+        return calculator.crossProductVectorsImproved(matrixA, matrixB);
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
@@ -1100,13 +1127,15 @@ class IGMatrixCalculatorUI {
     
     // Allow empty input, numbers, decimal points, and negative signs
     if (value === '' || value === '-' || value === '.' || /^-?\d*\.?\d*$/.test(value)) {
-      // Remove error styling
-      input.style.borderColor = 'var(--ig-gray-300)';
-      input.style.backgroundColor = 'var(--ig-white)';
+      // Remove error styling and restore normal styling
+      input.style.borderColor = 'var(--glass-border)';
+      input.style.backgroundColor = 'var(--surface-black)';
+      input.style.color = 'var(--text-primary)';
     } else {
       // Show error styling for invalid input
-      input.style.borderColor = 'var(--error)';
+      input.style.borderColor = 'var(--error, #ef4444)';
       input.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+      input.style.color = 'var(--text-primary)';
     }
   }
 
