@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatrixCalc - Student Math Assistant</title>
+    <link rel="stylesheet" href="css/ig-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="app-container">
+        
+        <!-- IG-Style Header -->
+        <header class="ig-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="app-logo">
+                        <i class="fas fa-calculator"></i>
+                        <span class="logo-text">MatrixCalc</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn theme-toggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="header-btn notifications" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- IG-Style Navigation -->
+        <nav class="ig-nav">
+            <div class="nav-content">
+                <button class="nav-item active" data-section="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" data-section="matrix">
+                    <i class="fas fa-th"></i>
+                    <span>Matrix</span>
+                </button>
+                <button class="nav-item" data-section="equations">
+                    <i class="fas fa-equals"></i>
+                    <span>Equations</span>
+                </button>
+                <button class="nav-item" data-section="history">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </button>
+                <button class="nav-item" data-section="tools">
+                    <i class="fas fa-tools"></i>
+                    <span>Tools</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Feed -->
+        <main class="ig-feed">
+            
+            <!-- Home Section -->
+            <section class="feed-section active" id="home-section">
+                <!-- Welcome Story Card -->
+                <div class="story-card welcome-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Welcome back!</h3>
+                            <p>Ready to solve some math?</p>
+                        </div>
+                        <button class="story-action">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <div class="welcome-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">47</span>
+                                <span class="stat-label">Problems Solved</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <span class="stat-number">12</span>
+                                <span class="stat-label">Matrices Calculated</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <span class="stat-number">8</span>
+                                <span class="stat-label">Equations Solved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Story -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-zap"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Quick Actions</h3>
+                            <p>Jump right into calculations</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" data-action="matrix-1x2">
+                                <i class="fas fa-minus"></i>
+                                <span>1×2 Vector</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="matrix-1x3">
+                                <i class="fas fa-ellipsis-h"></i>
+                                <span>1×3 Vector</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="matrix-2x2">
+                                <i class="fas fa-th-small"></i>
+                                <span>2×2 Matrix</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="matrix-3x3">
+                                <i class="fas fa-th"></i>
+                                <span>3×3 Matrix</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="equations-2">
+                                <i class="fas fa-equals"></i>
+                                <span>2 Equations</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="equations-3">
+                                <i class="fas fa-calculator"></i>
+                                <span>3 Equations</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Story -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Recent Activity</h3>
+                            <p>Your latest calculations</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-th"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <span class="activity-title">3×3 Matrix Determinant</span>
+                                    <span class="activity-time">2 minutes ago</span>
+                                </div>
+                                <span class="activity-result">det = 42</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-equals"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <span class="activity-title">Linear System 2×2</span>
+                                    <span class="activity-time">5 minutes ago</span>
+                                </div>
+                                <span class="activity-result">x=3, y=7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Matrix Calculator Section -->
+            <section class="feed-section" id="matrix-section">
+                <!-- Matrix Size Selector Story -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Matrix Calculator</h3>
+                            <p>Choose your matrix size</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="matrix-size-grid">
+                            <button class="size-tile" data-size="1x2">
+                                <div class="tile-icon">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">1×2</span>
+                                    <span class="tile-subtitle">Row Vector</span>
+                                </div>
+                            </button>
+                            <button class="size-tile" data-size="1x3">
+                                <div class="tile-icon">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">1×3</span>
+                                    <span class="tile-subtitle">Long Vector</span>
+                                </div>
+                            </button>
+                            <button class="size-tile" data-size="2x2">
+                                <div class="tile-icon">
+                                    <i class="fas fa-th-small"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">2×2</span>
+                                    <span class="tile-subtitle">Basic Matrix</span>
+                                </div>
+                            </button>
+                            <button class="size-tile" data-size="2x3">
+                                <div class="tile-icon">
+                                    <i class="fas fa-th-large"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">2×3</span>
+                                    <span class="tile-subtitle">Rectangular</span>
+                                </div>
+                            </button>
+                            <button class="size-tile" data-size="3x2">
+                                <div class="tile-icon">
+                                    <i class="fas fa-th-large"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">3×2</span>
+                                    <span class="tile-subtitle">Tall Matrix</span>
+                                </div>
+                            </button>
+                            <button class="size-tile" data-size="3x3">
+                                <div class="tile-icon">
+                                    <i class="fas fa-th"></i>
+                                </div>
+                                <div class="tile-info">
+                                    <span class="tile-title">3×3</span>
+                                    <span class="tile-subtitle">Square Matrix</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matrix Input Story -->
+                <div class="story-card matrix-input-story" id="matrix-input-container" style="display: none;">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Enter Matrix Values</h3>
+                            <p>Fill in your matrix elements</p>
+                        </div>
+                        <button class="story-action" id="clear-matrix">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <!-- Matrix Display with IG-style -->
+                        <div class="matrix-container">
+                            <!-- Single Matrix Mode -->
+                            <div class="single-matrix-mode" id="single-matrix-mode">
+                                <div class="matrix-wrapper">
+                                    <div class="matrix-bracket left">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                    
+                                    <div class="matrix-grid" id="matrix-grid"></div>
+                                    
+                                    <div class="matrix-bracket right">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dual Matrix Mode -->
+                            <div class="dual-matrix-mode" id="dual-matrix-mode" style="display: none;">
+                                <div class="matrix-wrapper">
+                                    <div class="matrix-bracket left">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                    <div class="matrix-grid" id="matrix-a-grid"></div>
+                                    <div class="matrix-bracket right">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="operation-symbol" id="operation-symbol">+</div>
+                                
+                                <div class="matrix-wrapper">
+                                    <div class="matrix-bracket left">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                    <div class="matrix-grid" id="matrix-b-grid"></div>
+                                    <div class="matrix-bracket right">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Results Display -->
+                            <div class="matrix-result-container" id="matrix-equals-section" style="display: none;">
+                                <div class="equals-symbol">=</div>
+                                <div class="result-wrapper">
+                                    <div class="matrix-bracket left">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                    
+                                    <div class="matrix-result-grid" id="matrix-result-grid"></div>
+                                    
+                                    <div class="matrix-bracket right">
+                                        <div class="bracket-line top"></div>
+                                        <div class="bracket-line middle"></div>
+                                        <div class="bracket-line bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Operation Mode Toggle -->
+                        <div class="operation-mode-toggle">
+                            <button class="mode-btn active" id="single-mode-btn" data-mode="single">
+                                <i class="fas fa-th"></i>
+                                <span>Single Matrix</span>
+                            </button>
+                            <button class="mode-btn" id="dual-mode-btn" data-mode="dual">
+                                <i class="fas fa-calculator"></i>
+                                <span>Matrix Operations</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Operation Selection (for dual mode) -->
+                        <div class="operation-selector" id="operation-selector" style="display: none;">
+                            <button class="operation-btn active" data-operation="add">
+                                <i class="fas fa-plus"></i>
+                                <span>Add (A + B)</span>
+                            </button>
+                            <button class="operation-btn" data-operation="subtract">
+                                <i class="fas fa-minus"></i>
+                                <span>Subtract (A - B)</span>
+                            </button>
+                            <button class="operation-btn" data-operation="dot">
+                                <i class="fas fa-circle"></i>
+                                <span>Dot Product (A · B)</span>
+                            </button>
+                            <button class="operation-btn" data-operation="cross">
+                                <i class="fas fa-times"></i>
+                                <span>Cross Product (A × B)</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="action-btn primary" id="calculate-matrix">
+                                <i class="fas fa-calculator"></i>
+                                <span>Calculate</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matrix Results Story -->
+                <div class="story-card" id="matrix-results" style="display: none;">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Calculation Results</h3>
+                            <p>Your matrix operations</p>
+                        </div>
+                        <button class="story-action share-btn">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <div class="results-grid" id="matrix-result-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Equations Section -->
+            <section class="feed-section" id="equations-section">
+                <!-- Equation Size Selector -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-equals"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Equation Solver</h3>
+                            <p>Linear system solver</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="equation-size-grid">
+                            <button class="equation-tile" data-unknowns="2">
+                                <div class="tile-badge">2</div>
+                                <div class="tile-info">
+                                    <span class="tile-title">2 Variables</span>
+                                    <span class="tile-subtitle">x, y system</span>
+                                </div>
+                            </button>
+                            <button class="equation-tile" data-unknowns="3">
+                                <div class="tile-badge">3</div>
+                                <div class="tile-info">
+                                    <span class="tile-title">3 Variables</span>
+                                    <span class="tile-subtitle">x, y, z system</span>
+                                </div>
+                            </button>
+                            <button class="equation-tile" data-unknowns="4">
+                                <div class="tile-badge">4</div>
+                                <div class="tile-info">
+                                    <span class="tile-title">4 Variables</span>
+                                    <span class="tile-subtitle">x, y, z, w system</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equation Input Story -->
+                <div class="story-card equation-input-story" id="equation-input-container" style="display: none;">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Enter Equations</h3>
+                            <p>Set up your linear system</p>
+                        </div>
+                        <button class="story-action" id="clear-equation">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <div class="equation-container">
+                            <div class="equation-grid" id="equation-grid"></div>
+                            <div class="action-buttons">
+                                <button class="action-btn primary" id="solve-equation">
+                                    <i class="fas fa-calculator"></i>
+                                    <span>Solve System</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equation Results Story -->
+                <div class="story-card" id="equation-results" style="display: none;">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Solution Found</h3>
+                            <p>Your equation solution</p>
+                        </div>
+                        <button class="story-action share-btn">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <div class="solution-display" id="equation-result-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="feed-section" id="history-section">
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Calculation History</h3>
+                            <p>Your recent work</p>
+                        </div>
+                        <button class="story-action">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                    <div class="story-content">
+                        <div class="history-list">
+                            <div class="history-item">
+                                <div class="history-icon">
+                                    <i class="fas fa-th"></i>
+                                </div>
+                                <div class="history-content">
+                                    <div class="history-title">3×3 Matrix Operations</div>
+                                    <div class="history-subtitle">Determinant, Inverse, Transpose</div>
+                                    <div class="history-time">Today, 2:30 PM</div>
+                                </div>
+                                <button class="history-action">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-icon">
+                                    <i class="fas fa-equals"></i>
+                                </div>
+                                <div class="history-content">
+                                    <div class="history-title">Linear System 2×2</div>
+                                    <div class="history-subtitle">Solution: x=3, y=7</div>
+                                    <div class="history-time">Today, 1:45 PM</div>
+                                </div>
+                                <button class="history-action">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section class="feed-section" id="tools-section">
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Math Tools</h3>
+                            <p>Additional utilities</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <div class="tools-grid">
+                            <div class="tool-card">
+                                <i class="fas fa-vector-square"></i>
+                                <h4>Vector Calculator</h4>
+                                <p>Dot & cross products</p>
+                            </div>
+                            <div class="tool-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h4>Graph Plotter</h4>
+                                <p>Visualize equations</p>
+                            </div>
+                            <div class="tool-card">
+                                <i class="fas fa-calculator"></i>
+                                <h4>Scientific Calc</h4>
+                                <p>Advanced functions</p>
+                            </div>
+                            <div class="tool-card coming-soon">
+                                <i class="fas fa-rocket"></i>
+                                <h4>AI Tutor</h4>
+                                <p>Coming soon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- IG-Style Bottom Navigation (Mobile) -->
+        <nav class="bottom-nav">
+            <button class="bottom-nav-item active" data-section="home">
+                <i class="fas fa-home"></i>
+            </button>
+            <button class="bottom-nav-item" data-section="matrix">
+                <i class="fas fa-th"></i>
+            </button>
+            <button class="bottom-nav-item" data-section="equations">
+                <i class="fas fa-equals"></i>
+            </button>
+            <button class="bottom-nav-item" data-section="history">
+                <i class="fas fa-history"></i>
+            </button>
+            <button class="bottom-nav-item" data-section="tools">
+                <i class="fas fa-tools"></i>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/matrix-calculator.js"></script>
+    <script src="js/enhanced-matrix-calculator.js"></script>
+    <script src="js/equation-solver.js"></script>
+    <script src="js/ui-handler.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+                                <span class="size-description">3 Rows, 2 Columns</span>
+                            </button>
+                            <button class="size-btn" data-size="3x3" aria-describedby="matrix-3x3-desc">
+                                <span class="size-label">3×3</span>
+                                <span class="size-description">Advanced Matrix</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Input Area (Dynamic) -->
+                    <div class="matrix-input-container" id="matrix-input-container" style="display: none;">
+                        <div class="input-section">
+                            <h3 class="input-title">Enter Matrix Values:</h3>
+                            
+                            <!-- Matrix with Brackets Display -->
+                            <div class="matrix-display-container">
+                                <div class="matrix-bracket-container">
+                                    <div class="matrix-bracket left-bracket">
+                                        <div class="bracket-top"></div>
+                                        <div class="bracket-middle"></div>
+                                        <div class="bracket-bottom"></div>
+                                    </div>
+                                    
+                                    <div class="matrix-grid" id="matrix-grid"></div>
+                                    
+                                    <div class="matrix-bracket right-bracket">
+                                        <div class="bracket-top"></div>
+                                        <div class="bracket-middle"></div>
+                                        <div class="bracket-bottom"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Equals Sign and Result Matrix -->
+                                <div class="matrix-equals-section" id="matrix-equals-section" style="display: none;">
+                                    <div class="equals-symbol">=</div>
+                                    
+                                    <div class="result-matrix-container">
+                                        <div class="matrix-bracket left-bracket">
+                                            <div class="bracket-top"></div>
+                                            <div class="bracket-middle"></div>
+                                            <div class="bracket-bottom"></div>
+                                        </div>
+                                        
+                                        <div class="matrix-result-grid" id="matrix-result-grid"></div>
+                                        
+                                        <div class="matrix-bracket right-bracket">
+                                            <div class="bracket-top"></div>
+                                            <div class="bracket-middle"></div>
+                                            <div class="bracket-bottom"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="calculation-controls">
+                                <button class="action-btn primary" id="calculate-matrix">
+                                    <i class="fas fa-equals"></i>
+                                    Calculate
+                                </button>
+                                <button class="action-btn secondary" id="clear-matrix">
+                                    <i class="fas fa-trash"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Results Display -->
+                        <div class="results-section" id="matrix-results" style="display: none;">
+                            <h3 class="results-title">
+                                <i class="fas fa-chart-line"></i>
+                                Calculation Details
+                            </h3>
+                            <div class="results-content" id="matrix-result-content"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Equation Solver Section -->
+                <section class="calculator-section" id="equation-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-equals" aria-hidden="true"></i>
+                            Equation Solver
+                        </h2>
+                        <p class="section-description">Solve linear equations with multiple unknowns</p>
+                    </div>
+
+                    <!-- Equation Size Selection -->
+                    <div class="equation-size-selector" role="group" aria-label="Number of unknowns selection">
+                        <h3 class="selector-title">Number of Unknowns:</h3>
+                        <div class="size-buttons">
+                            <button class="size-btn" data-unknowns="2">
+                                <span class="size-label">2</span>
+                                <span class="size-description">2 Variables</span>
+                            </button>
+                            <button class="size-btn" data-unknowns="3">
+                                <span class="size-label">3</span>
+                                <span class="size-description">3 Variables</span>
+                            </button>
+                            <button class="size-btn" data-unknowns="4">
+                                <span class="size-label">4</span>
+                                <span class="size-description">4 Variables</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Equation Input Area (Dynamic) -->
+                    <div class="equation-input-container" id="equation-input-container" style="display: none;">
+                        <div class="input-section">
+                            <h3 class="input-title">Enter Equations:</h3>
+                            <div class="equation-grid" id="equation-grid"></div>
+                            <div class="calculation-controls">
+                                <button class="action-btn primary" id="solve-equation">
+                                    <i class="fas fa-solve"></i>
+                                    Solve
+                                </button>
+                                <button class="action-btn secondary" id="clear-equation">
+                                    <i class="fas fa-trash"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Results Display -->
+                        <div class="results-section" id="equation-results" style="display: none;">
+                            <h3 class="results-title">
+                                <i class="fas fa-check-circle"></i>
+                                Solution
+                            </h3>
+                            <div class="results-content" id="equation-result-content"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 Matrix Calculator - Student Math Assistant</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/matrix-calculator.js"></script>
+    <script src="js/equation-solver.js"></script>
+    <script src="js/ig-ui-handler.js"></script>
+</body>
+</html>
