@@ -214,16 +214,17 @@ class MatrixCalculatorUI {
    */
   createMatrixInput(row, col) {
     const input = document.createElement('input');
-    input.type = 'number';
-    input.className = 'matrix-input';
+    input.type = 'text'; // Changed from 'number' to 'text' to allow variables
+    input.className = 'matrix-input numeric-text';
     input.id = `matrix-${row}-${col}`;
     input.setAttribute('aria-label', `Matrix element row ${row + 1}, column ${col + 1}`);
     input.placeholder = '0';
-    input.step = '0.01';
+    input.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
     
     // Add input validation
-    input.addEventListener('input', (e) => this.validateNumericInput(e));
+    input.addEventListener('input', (e) => this.validateAlphanumericInput(e));
     input.addEventListener('keydown', (e) => this.handleMatrixNavigation(e, row, col));
+    input.addEventListener('keypress', (e) => this.restrictToAlphanumericInput(e));
     
     return input;
   }
@@ -238,12 +239,12 @@ class MatrixCalculatorUI {
     // Create coefficient inputs
     for (let i = 0; i < totalUnknowns; i++) {
       const coeffInput = document.createElement('input');
-      coeffInput.type = 'number';
-      coeffInput.className = 'equation-input coefficient';
+      coeffInput.type = 'text'; // Changed from 'number' to 'text' to allow variables
+      coeffInput.className = 'equation-input coefficient numeric-text';
       coeffInput.id = `eq-${equationIndex}-coeff-${i}`;
       coeffInput.setAttribute('aria-label', `Equation ${equationIndex + 1}, coefficient for variable ${String.fromCharCode(120 + i)}`);
       coeffInput.placeholder = '0';
-      coeffInput.step = '0.01';
+      coeffInput.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
       
       const variable = document.createElement('span');
       variable.className = 'variable-label';
@@ -267,12 +268,12 @@ class MatrixCalculatorUI {
     row.appendChild(equals);
     
     const resultInput = document.createElement('input');
-    resultInput.type = 'number';
-    resultInput.className = 'equation-input result';
+    resultInput.type = 'text'; // Changed from 'number' to 'text' to allow variables
+    resultInput.className = 'equation-input result numeric-text';
     resultInput.id = `eq-${equationIndex}-result`;
     resultInput.setAttribute('aria-label', `Equation ${equationIndex + 1} result`);
     resultInput.placeholder = '0';
-    resultInput.step = '0.01';
+    resultInput.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
     
     row.appendChild(resultInput);
     
@@ -322,6 +323,116 @@ class MatrixCalculatorUI {
       this.showValidationError(e.target, 'Please enter a valid number');
     } else {
       this.clearValidationError(e.target);
+    }
+  }
+
+  /**
+   * Validate alphanumeric input (numbers and variables like '3x')
+   */
+  validateAlphanumericInput(e) {
+    const value = e.target.value;
+    
+    // Allow empty input, numbers, variables, decimal points, and negative signs
+    // Pattern allows: numbers, variables (like 'x', 'y'), combinations (like '3x', '-2y'), decimals
+    const validPattern = /^-?(\d*\.?\d*[a-zA-Z]*|\d*[a-zA-Z]+\d*\.?\d*|[a-zA-Z]+\d*\.?\d*|\d*\.?\d*)$/;
+    
+    if (value && !validPattern.test(value)) {
+      // Don't auto-remove characters, just show error
+      this.showValidationError(e.target, 'Please enter numbers or variables (e.g., 3, x, 3x, -2y)');
+    } else {
+      this.clearValidationError(e.target);
+    }
+  }
+
+  /**
+   * Restrict input to alphanumeric characters (numbers, letters, decimal, minus)
+   */
+  restrictToAlphanumericInput(event) {
+    const char = String.fromCharCode(event.which);
+    const input = event.target;
+    const currentValue = input.value;
+    
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey) ||
+        (event.keyCode === 67 && event.ctrlKey) ||
+        (event.keyCode === 86 && event.ctrlKey) ||
+        (event.keyCode === 88 && event.ctrlKey)) {
+      return;
+    }
+    
+    // Allow numbers, letters, decimal point, and minus sign
+    if (!/[\d\.\-a-zA-Z]/.test(char)) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple decimal points
+    if (char === '.' && currentValue.indexOf('.') !== -1) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple minus signs or minus not at beginning
+    if (char === '-' && (currentValue.indexOf('-') !== -1 || input.selectionStart !== 0)) {
+      event.preventDefault();
+      return;
+    }
+  }
+
+  /**
+   * Validate alphanumeric input (numbers and variables like '3x')
+   */
+  validateAlphanumericInput(e) {
+    const value = e.target.value;
+    
+    // Allow empty input, numbers, variables, decimal points, and negative signs
+    // Pattern allows: numbers, variables (like 'x', 'y'), combinations (like '3x', '-2y'), decimals
+    const validPattern = /^-?(\d*\.?\d*[a-zA-Z]*|\d*[a-zA-Z]+\d*\.?\d*|[a-zA-Z]+\d*\.?\d*|\d*\.?\d*)$/;
+    
+    if (value && !validPattern.test(value)) {
+      // Don't auto-remove characters, just show error
+      this.showValidationError(e.target, 'Please enter numbers or variables (e.g., 3, x, 3x, -2y)');
+    } else {
+      this.clearValidationError(e.target);
+    }
+  }
+
+  /**
+   * Restrict input to alphanumeric characters (numbers, letters, decimal, minus)
+   */
+  restrictToAlphanumericInput(event) {
+    const char = String.fromCharCode(event.which);
+    const input = event.target;
+    const currentValue = input.value;
+    
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey) ||
+        (event.keyCode === 67 && event.ctrlKey) ||
+        (event.keyCode === 86 && event.ctrlKey) ||
+        (event.keyCode === 88 && event.ctrlKey)) {
+      return;
+    }
+    
+    // Allow numbers, letters, decimal point, and minus sign
+    if (!/[\d\.\-a-zA-Z]/.test(char)) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple decimal points
+    if (char === '.' && currentValue.indexOf('.') !== -1) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple minus signs or minus not at beginning
+    if (char === '-' && (currentValue.indexOf('-') !== -1 || input.selectionStart !== 0)) {
+      event.preventDefault();
+      return;
     }
   }
 

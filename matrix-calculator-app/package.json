@@ -5,6 +5,10 @@
   "main": "src/js/app.js",
   "scripts": {
     "test": "jest",
+    "qa": "node qa-simple.js",
+    "qa:full": "node qa-cli.js",
+    "qa:verbose": "node qa-simple.js --verbose",
+    "qa:web": "live-server --port=8081 --open=qa-test-runner.html",
     "start": "live-server src --port=8080 --host=localhost",
     "dev": "live-server src --port=8080 --host=localhost --open",
     "server": "node server/index.js"

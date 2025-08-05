@@ -22,33 +22,33 @@ const MatrixInput = ({ onMatrixSubmit }) => {
             <div>
                 <label>
                     A11:
-                    <input type="number" name="a11" onChange={handleChange} />
+                    <input type="text" name="a11" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
                 <label>
                     A12:
-                    <input type="number" name="a12" onChange={handleChange} />
+                    <input type="text" name="a12" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
                 <label>
                     A21:
-                    <input type="number" name="a21" onChange={handleChange} />
+                    <input type="text" name="a21" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
                 <label>
                     A22:
-                    <input type="number" name="a22" onChange={handleChange} />
+                    <input type="text" name="a22" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
             </div>
             <div>
                 <label>
                     A31:
-                    <input type="number" name="a31" onChange={handleChange} />
+                    <input type="text" name="a31" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
                 <label>
                     A32:
-                    <input type="number" name="a32" onChange={handleChange} />
+                    <input type="text" name="a32" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
                 <label>
                     A33:
-                    <input type="number" name="a33" onChange={handleChange} />
+                    <input type="text" name="a33" onChange={handleChange} className="numeric-text" inputMode="decimal" />
                 </label>
             </div>
             <button type="submit">Submit Matrix</button>

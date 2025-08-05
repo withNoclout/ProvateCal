@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Calculator QA Testing Agent</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 50%, #11111b 100%);
+            color: #cdd6f4;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(205, 214, 244, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #94e2d5;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(148, 226, 213, 0.3);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .status.loading {
+            background: linear-gradient(45deg, #fab387, #f9e2af);
+            color: #1e1e2e;
+            animation: pulse 2s infinite;
+        }
+
+        .status.success {
+            background: linear-gradient(45deg, #a6e3a1, #94e2d5);
+            color: #1e1e2e;
+        }
+
+        .status.error {
+            background: linear-gradient(45deg, #f38ba8, #eba0ac);
+            color: #1e1e2e;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #89b4fa, #74c7ec);
+            color: #1e1e2e;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #74c7ec, #89dceb);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(116, 199, 236, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #cba6f7, #f5c2e7);
+            color: #1e1e2e;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #f5c2e7, #cba6f7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(245, 194, 231, 0.4);
+        }
+
+        #console {
+            background: #181825;
+            border: 1px solid #45475a;
+            border-radius: 10px;
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            color: #cdd6f4;
+            margin-top: 20px;
+        }
+
+        #console::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #console::-webkit-scrollbar-track {
+            background: #1e1e2e;
+            border-radius: 4px;
+        }
+
+        #console::-webkit-scrollbar-thumb {
+            background: #585b70;
+            border-radius: 4px;
+        }
+
+        #console::-webkit-scrollbar-thumb:hover {
+            background: #6c7086;
+        }
+
+        .summary-card {
+            background: rgba(24, 24, 37, 0.8);
+            border: 1px solid #45475a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .summary-card h3 {
+            color: #94e2d5;
+            margin-top: 0;
+            border-bottom: 2px solid #45475a;
+            padding-bottom: 10px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .metric {
+            background: rgba(30, 30, 46, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #45475a;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #94e2d5;
+        }
+
+        .metric-label {
+            color: #a6adc8;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            background: #1e1e2e;
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+            border: 1px solid #45475a;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #a6e3a1, #94e2d5);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e1e2e;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .test-details {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .function-group {
+            background: rgba(69, 71, 90, 0.3);
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 15px;
+            border-left: 4px solid #89b4fa;
+        }
+
+        .function-name {
+            font-weight: bold;
+            color: #89b4fa;
+            margin-bottom: 10px;
+        }
+
+        .test-item {
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .test-passed {
+            background: rgba(166, 227, 161, 0.2);
+            color: #a6e3a1;
+            border-left: 3px solid #a6e3a1;
+        }
+
+        .test-failed {
+            background: rgba(243, 139, 168, 0.2);
+            color: #f38ba8;
+            border-left: 3px solid #f38ba8;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #45475a;
+            color: #6c7086;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Matrix Calculator QA Testing Agent</h1>
+        
+        <div id="status" class="status loading">
+            🚀 Initializing QA Testing Agent...
+        </div>
+
+        <div class="controls">
+            <button id="runTests" class="btn-primary">▶️ Run All Tests</button>
+            <button id="clearConsole" class="btn-secondary">🗑️ Clear Console</button>
+            <button id="exportReport" class="btn-secondary">📊 Export Report</button>
+        </div>
+
+        <div id="summary" class="summary-card">
+            <h3>📊 Test Summary</h3>
+            <div class="metrics">
+                <div class="metric">
+                    <div id="totalTests" class="metric-value">0</div>
+                    <div class="metric-label">Total Tests</div>
+                </div>
+                <div class="metric">
+                    <div id="passedTests" class="metric-value">0</div>
+                    <div class="metric-label">Passed</div>
+                </div>
+                <div class="metric">
+                    <div id="failedTests" class="metric-value">0</div>
+                    <div class="metric-label">Failed</div>
+                </div>
+                <div class="metric">
+                    <div id="passRate" class="metric-value">0%</div>
+                    <div class="metric-label">Pass Rate</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill">0%</div>
+            </div>
+
+            <div id="testDetails" class="test-details"></div>
+        </div>
+
+        <div id="console"></div>
+
+        <div class="footer">
+            Matrix Calculator QA Testing Agent v1.0.0 | 
+            Automated Testing Suite for Mathematical Operations
+        </div>
+    </div>
+
+    <!-- Load all calculator classes -->
+    <script src="src/js/matrix-calculator.js"></script>
+    <script src="src/js/enhanced-matrix-calculator.js"></script>
+    <script src="src/js/equation-solver.js"></script>
+    
+    <!-- Load QA Testing Agent -->
+    <script src="qa-testing-agent.js"></script>
+
+    <script>
+        class QATestRunner {
+            constructor() {
+                this.qa = null;
+                this.isRunning = false;
+                this.setupUI();
+                this.initializeAgent();
+            }
+
+            setupUI() {
+                // Get UI elements
+                this.statusEl = document.getElementById('status');
+                this.consoleEl = document.getElementById('console');
+                this.summaryEl = document.getElementById('summary');
+                this.runTestsBtn = document.getElementById('runTests');
+                this.clearConsoleBtn = document.getElementById('clearConsole');
+                this.exportReportBtn = document.getElementById('exportReport');
+
+                // Bind events
+                this.runTestsBtn.addEventListener('click', () => this.runTests());
+                this.clearConsoleBtn.addEventListener('click', () => this.clearConsole());
+                this.exportReportBtn.addEventListener('click', () => this.exportReport());
+
+                // Override console.log to capture output
+                this.originalConsoleLog = console.log;
+                console.log = (...args) => {
+                    this.originalConsoleLog(...args);
+                    this.appendToConsole(args.join(' '));
+                };
+
+                console.error = (...args) => {
+                    this.originalConsoleLog(...args);
+                    this.appendToConsole('ERROR: ' + args.join(' '));
+                };
+            }
+
+            async initializeAgent() {
+                try {
+                    this.qa = new MatrixQAAgent();
+                    this.statusEl.textContent = '✅ QA Testing Agent Ready';
+                    this.statusEl.className = 'status success';
+                    this.runTestsBtn.disabled = false;
+                    
+                    this.appendToConsole('🔬 Matrix QA Testing Agent initialized successfully');
+                    this.appendToConsole('📦 Available classes:');
+                    this.appendToConsole(`   • MatrixCalculator: ${typeof MatrixCalculator !== 'undefined' ? '✅' : '❌'}`);
+                    this.appendToConsole(`   • EnhancedMatrixCalculator: ${typeof EnhancedMatrixCalculator !== 'undefined' ? '✅' : '❌'}`);
+                    this.appendToConsole(`   • EquationSolver: ${typeof EquationSolver !== 'undefined' ? '✅' : '❌'}`);
+                    this.appendToConsole('');
+                    this.appendToConsole('Click "Run All Tests" to start comprehensive testing...');
+                    
+                } catch (error) {
+                    this.statusEl.textContent = '❌ Failed to Initialize QA Agent';
+                    this.statusEl.className = 'status error';
+                    this.appendToConsole('ERROR: Failed to initialize QA Testing Agent: ' + error.message);
+                }
+            }
+
+            async runTests() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.runTestsBtn.disabled = true;
+                this.statusEl.textContent = '🔄 Running Comprehensive Tests...';
+                this.statusEl.className = 'status loading';
+                this.clearConsole();
+
+                try {
+                    // Start test execution
+                    this.appendToConsole('🚀 Starting Matrix QA Testing Suite...\n');
+                    
+                    const startTime = performance.now();
+                    await this.qa.runAllTests();
+                    const endTime = performance.now();
+                    
+                    this.appendToConsole(`\n⏱️ Testing completed in ${(endTime - startTime).toFixed(2)}ms`);
+                    
+                    // Update status
+                    const failedCount = this.qa.testResults.failed.length;
+                    if (failedCount === 0) {
+                        this.statusEl.textContent = '🎉 All Tests Passed!';
+                        this.statusEl.className = 'status success';
+                    } else {
+                        this.statusEl.textContent = `⚠️ ${failedCount} Tests Failed`;
+                        this.statusEl.className = 'status error';
+                    }
+
+                    // Show summary
+                    this.updateSummary();
+                    
+                } catch (error) {
+                    this.statusEl.textContent = '❌ Testing Failed';
+                    this.statusEl.className = 'status error';
+                    this.appendToConsole('CRITICAL ERROR: ' + error.message);
+                    console.error('QA Testing Error:', error);
+                } finally {
+                    this.isRunning = false;
+                    this.runTestsBtn.disabled = false;
+                }
+            }
+
+            updateSummary() {
+                const results = this.qa.testResults;
+                const totalTests = results.passed.length + results.failed.length;
+                const passRate = totalTests > 0 ? (results.passed.length / totalTests * 100).toFixed(1) : 0;
+
+                // Update metrics
+                document.getElementById('totalTests').textContent = totalTests;
+                document.getElementById('passedTests').textContent = results.passed.length;
+                document.getElementById('failedTests').textContent = results.failed.length;
+                document.getElementById('passRate').textContent = passRate + '%';
+
+                // Update progress bar
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = passRate + '%';
+                progressFill.textContent = passRate + '%';
+
+                // Show test details
+                this.showTestDetails();
+
+                // Show summary card
+                this.summaryEl.style.display = 'block';
+            }
+
+            showTestDetails() {
+                const detailsEl = document.getElementById('testDetails');
+                const results = this.qa.testResults;
+                
+                // Group results by function
+                const functionGroups = {};
+                
+                [...results.passed, ...results.failed].forEach(test => {
+                    if (!functionGroups[test.function]) {
+                        functionGroups[test.function] = { passed: [], failed: [] };
+                    }
+                    
+                    if (results.passed.includes(test)) {
+                        functionGroups[test.function].passed.push(test);
+                    } else {
+                        functionGroups[test.function].failed.push(test);
+                    }
+                });
+
+                let html = '';
+                Object.keys(functionGroups).sort().forEach(functionName => {
+                    const group = functionGroups[functionName];
+                    const total = group.passed.length + group.failed.length;
+                    const rate = total > 0 ? (group.passed.length / total * 100).toFixed(1) : 0;
+                    
+                    html += `
+                        <div class="function-group">
+                            <div class="function-name">
+                                📦 ${functionName} (${rate}% pass rate)
+                            </div>
+                    `;
+                    
+                    // Show failed tests first
+                    group.failed.forEach(test => {
+                        html += `
+                            <div class="test-item test-failed">
+                                ❌ ${test.test}: ${test.error || 'Unknown error'}
+                            </div>
+                        `;
+                    });
+                    
+                    // Show passed tests
+                    group.passed.forEach(test => {
+                        html += `
+                            <div class="test-item test-passed">
+                                ✅ ${test.test}
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                });
+
+                detailsEl.innerHTML = html;
+            }
+
+            clearConsole() {
+                this.consoleEl.textContent = '';
+            }
+
+            appendToConsole(text) {
+                this.consoleEl.textContent += text + '\n';
+                this.consoleEl.scrollTop = this.consoleEl.scrollHeight;
+            }
+
+            exportReport() {
+                if (!this.qa || !this.qa.testResults) {
+                    alert('No test results to export. Please run tests first.');
+                    return;
+                }
+
+                const report = this.qa.generateTestReport();
+                const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `matrix-qa-report-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                this.appendToConsole('📊 Test report exported successfully!');
+            }
+        }
+
+        // Initialize the test runner when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new QATestRunner();
+        });
+    </script>
+</body>
+</html>

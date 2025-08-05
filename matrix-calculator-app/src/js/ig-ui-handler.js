@@ -434,8 +434,8 @@ class IGMatrixCalculatorUI {
    */
   createMatrixInput(row, col, matrix = '') {
     const input = document.createElement('input');
-    input.type = 'number';
-    input.className = 'matrix-input';
+    input.type = 'text'; // Changed from 'number' to 'text' to allow variables like '3x'
+    input.className = 'matrix-input numeric-text';
     
     // Set ID based on matrix type
     if (matrix) {
@@ -447,20 +447,21 @@ class IGMatrixCalculatorUI {
     }
     
     input.placeholder = '0';
-    input.step = '0.01';
+    input.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
     
     // Remove spinner controls and fix styling
     input.style.appearance = 'textfield';
-    input.style.webkitAppearance = 'none';
+    input.style.webkitAppearance = 'textfield';
     input.style.mozAppearance = 'textfield';
     
     // Add input validation and navigation
     input.addEventListener('input', (e) => {
       e.target.style.backgroundColor = 'var(--surface-black)';
       e.target.style.color = 'var(--text-primary)';
-      this.validateNumericInput(e);
+      this.validateAlphanumericInput(e);
     });
     input.addEventListener('keydown', (e) => this.handleMatrixNavigation(e, row, col, matrix));
+    input.addEventListener('keypress', (e) => this.restrictToAlphanumericInput(e));
     input.addEventListener('wheel', (e) => e.preventDefault());
     
     return input;
@@ -485,16 +486,16 @@ class IGMatrixCalculatorUI {
     // Create coefficient inputs
     for (let i = 0; i < totalUnknowns; i++) {
       const coeffInput = document.createElement('input');
-      coeffInput.type = 'number';
-      coeffInput.className = 'equation-input coefficient';
+      coeffInput.type = 'text'; // Changed from 'number' to 'text' to allow variables
+      coeffInput.className = 'equation-input coefficient numeric-text';
       coeffInput.id = `eq-${equationIndex}-coeff-${i}`;
       coeffInput.setAttribute('aria-label', `Equation ${equationIndex + 1}, coefficient for variable ${String.fromCharCode(120 + i)}`);
       coeffInput.placeholder = '0';
-      coeffInput.step = '0.01';
+      coeffInput.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
       
       // Add input validation and formatting
-      coeffInput.addEventListener('input', (e) => this.validateNumericInput(e));
-      coeffInput.addEventListener('keypress', (e) => this.restrictToNumericInput(e));
+      coeffInput.addEventListener('input', (e) => this.validateAlphanumericInput(e));
+      coeffInput.addEventListener('keypress', (e) => this.restrictToAlphanumericInput(e));
       
       coeffInput.style.cssText = `
         width: 80px;
@@ -555,16 +556,16 @@ class IGMatrixCalculatorUI {
     `;
     
     const resultInput = document.createElement('input');
-    resultInput.type = 'number';
-    resultInput.className = 'equation-input result';
+    resultInput.type = 'text'; // Changed from 'number' to 'text' to allow variables
+    resultInput.className = 'equation-input result numeric-text';
     resultInput.id = `eq-${equationIndex}-result`;
     resultInput.setAttribute('aria-label', `Equation ${equationIndex + 1} result`);
     resultInput.placeholder = '0';
-    resultInput.step = '0.01';
+    resultInput.setAttribute('inputmode', 'decimal'); // Hint for mobile keyboards
     
     // Add input validation and formatting
-    resultInput.addEventListener('input', (e) => this.validateNumericInput(e));
-    resultInput.addEventListener('keypress', (e) => this.restrictToNumericInput(e));
+    resultInput.addEventListener('input', (e) => this.validateAlphanumericInput(e));
+    resultInput.addEventListener('keypress', (e) => this.restrictToAlphanumericInput(e));
     
     resultInput.style.cssText = `
       width: 80px;
@@ -674,9 +675,15 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Display matrix results with IG-style animation
+   * Display matrix results with enhanced formatting and brackets
    */
   displayMatrixResults(results) {
+    // Check if this is a dual matrix operation result
+    if (results.operation && results.result !== undefined) {
+      this.displayDualMatrixResults(results);
+      return;
+    }
+
     // Show matrix result in equation format
     const resultContainer = document.getElementById('matrix-equals-section');
     const resultGrid = document.getElementById('matrix-result-grid');
@@ -750,6 +757,469 @@ class IGMatrixCalculatorUI {
   }
 
   /**
+   * Display dual matrix operation results with enhanced symbolic support
+   */
+  displayDualMatrixResults(operationResult) {
+    const enhancedCalculator = new EnhancedMatrixCalculator();
+    
+    // Handle symbolic vs numeric results differently
+    if (operationResult.isSymbolic) {
+      // For symbolic results, display the symbolic expression directly
+      this.displaySymbolicResult(operationResult);
+    } else {
+      // For numeric results, use the existing matrix display format
+      const resultData = enhancedCalculator.formatMatrixDisplay(
+        operationResult.result, 
+        `${operationResult.description || 'Result'}`
+      );
+
+      // Create the matrix result display container
+      const resultContainer = document.getElementById('matrix-equals-section');
+      if (!resultContainer) return;
+
+      // Generate the matrix HTML with brackets
+      const matrixHTML = enhancedCalculator.generateMatrixHTML(resultData);
+      
+      // Insert the result into the container
+      resultContainer.innerHTML = `
+        <div class="equals-symbol">=</div>
+        ${matrixHTML}
+      `;
+      
+      // Show the result container with animation
+      resultContainer.style.display = 'flex';
+      setTimeout(() => {
+        resultContainer.classList.add('show');
+      }, 100);
+    }
+
+    // Update detailed results story card for both types
+    this.updateDetailedResults(operationResult);
+  }
+
+  /**
+   * Display symbolic results in enhanced matrix bracket format
+   */
+  displaySymbolicResult(operationResult) {
+    const resultContainer = document.getElementById('matrix-equals-section');
+    if (!resultContainer) return;
+
+    console.log('🔍 DISPLAYING RESULT:', operationResult);
+
+    // Simple, direct display for cross product results
+    if (Array.isArray(operationResult.result) && operationResult.result.length === 3) {
+      // Build simple HTML directly
+      const resultHTML = `
+        <div class="simple-cross-result">
+          <h3>Cross Product Result</h3>
+          <div class="vector-display">
+            <div class="vector-bracket">[</div>
+            <div class="vector-components">
+              <div class="component">
+                <span class="component-label">i:</span>
+                <span class="component-value">${operationResult.result[0]}</span>
+              </div>
+              <div class="component">
+                <span class="component-label">j:</span>
+                <span class="component-value">${operationResult.result[1]}</span>
+              </div>
+              <div class="component">
+                <span class="component-label">k:</span>
+                <span class="component-value">${operationResult.result[2]}</span>
+              </div>
+            </div>
+            <div class="vector-bracket">]</div>
+          </div>
+        </div>
+      `;
+      
+      resultContainer.innerHTML = resultHTML;
+    } else {
+      // Scalar result
+      resultContainer.innerHTML = `
+        <div class="simple-cross-result">
+          <h3>Result</h3>
+          <div class="scalar-display">
+            <span class="scalar-value">${operationResult.result}</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Show the result container
+    resultContainer.style.display = 'block';
+    resultContainer.classList.add('show');
+  }
+
+  /**
+   * Generate clean, professional result display
+   */
+  generateCleanResultDisplay(operationResult) {
+    const isVector = Array.isArray(operationResult.result);
+    const resultType = isVector ? '3D Vector' : '2D Scalar';
+    const operationName = operationResult.operation === 'crossProductSymbolic' ? 'Cross Product' : 'Matrix Operation';
+    
+    return `
+      <div class="clean-result-container">
+        <div class="result-header">
+          <div class="result-icon">×</div>
+          <div>
+            <h3 class="result-title">${operationName} Result</h3>
+            <p class="result-subtitle">${resultType} • Symbolic Calculation</p>
+          </div>
+        </div>
+        
+        <div class="result-content">
+          ${isVector ? this.generateVectorDisplay(operationResult.result) : this.generateScalarDisplay(operationResult.result)}
+        </div>
+        
+        <div class="result-meta">
+          <div class="result-type">
+            <span class="type-badge">${resultType}</span>
+            <span>Symbolic Expression</span>
+          </div>
+          <button class="copy-button" onclick="this.copyResult('${isVector ? operationResult.result.join(', ') : operationResult.result}')">
+            <i class="fas fa-copy"></i>
+            Copy Result
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate vector display for 3D results
+   */
+  generateVectorDisplay(vectorResult) {
+    const components = ['i', 'j', 'k'];
+    
+    return `
+      <div class="vector-result">
+        <span class="vector-bracket">[</span>
+        <div class="vector-components">
+          ${vectorResult.map((expr, index) => `
+            <div class="vector-component">
+              <div class="component-badge">${components[index]}</div>
+              <div class="component-value">${this.formatExpression(expr)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <span class="vector-bracket">]</span>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate scalar display for 2D results
+   */
+  generateScalarDisplay(scalarResult) {
+    return `
+      <div class="scalar-result">
+        <div class="scalar-value">${this.formatExpression(scalarResult)}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Format mathematical expressions for better readability
+   */
+  formatExpression(expression) {
+    if (!expression || typeof expression !== 'string') {
+      return expression;
+    }
+    
+    // Since our enhanced matrix calculator already provides simplified results,
+    // we only need basic formatting without re-simplification
+    return expression
+      .replace(/\*/g, ' × ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Simplify mathematical expressions to make them user-friendly
+   */
+  simplifyExpression(expression) {
+    if (!expression || typeof expression !== 'string') {
+      return expression;
+    }
+
+    try {
+      // First try Math.js simplification if available
+      if (typeof math !== 'undefined' && math.simplify) {
+        try {
+          const simplified = math.simplify(expression).toString();
+          return simplified;
+        } catch (mathError) {
+          console.log('Math.js simplification failed, using manual method');
+        }
+      }
+
+      // Fallback to manual simplification
+      let simplified = expression;
+
+      // Pattern 1: Remove multiplication by 0 -> results in 0
+      // (0) × (anything) = 0 or (anything) × (0) = 0
+      simplified = simplified.replace(/\(\s*0\s*\)\s*\*\s*\([^)]+\)/g, '0');
+      simplified = simplified.replace(/\([^)]+\)\s*\*\s*\(\s*0\s*\)/g, '0');
+
+      // Pattern 2: Remove multiplication by 1 -> keep the other number
+      // (1) × (something) = something or (something) × (1) = something
+      simplified = simplified.replace(/\(\s*1\s*\)\s*\*\s*\(([^)]+)\)/g, '($1)');
+      simplified = simplified.replace(/\(([^)]+)\)\s*\*\s*\(\s*1\s*\)/g, '($1)');
+
+      // Pattern 3: Simplify expressions like "0 - something" or "something - 0"
+      simplified = simplified.replace(/\b0\s*-\s*\(([^)]+)\)/g, '-($1)');
+      simplified = simplified.replace(/\(([^)]+)\)\s*-\s*0\b/g, '($1)');
+
+      // Pattern 4: Simplify "0 + something" or "something + 0"
+      simplified = simplified.replace(/\b0\s*\+\s*\(([^)]+)\)/g, '($1)');
+      simplified = simplified.replace(/\(([^)]+)\)\s*\+\s*0\b/g, '($1)');
+
+      // Pattern 5: Handle negative zero results
+      simplified = simplified.replace(/\b0\s*-\s*0\b/g, '0');
+
+      // Pattern 6: Evaluate simple arithmetic when possible
+      simplified = this.evaluateSimpleArithmetic(simplified);
+
+      // Pattern 7: Clean up unnecessary parentheses around single numbers/variables
+      simplified = simplified.replace(/\(([a-zA-Z0-9]+)\)/g, '$1');
+
+      // Pattern 8: Remove extra spaces and clean up
+      simplified = simplified.replace(/\s+/g, ' ').trim();
+
+      // Pattern 9: If the result is just "0 - 0" or similar, make it "0"
+      if (simplified.match(/^0\s*[-+]\s*0$/)) {
+        simplified = '0';
+      }
+
+      // Pattern 10: Handle expressions that are entirely zero
+      if (simplified.match(/^0(\s*[-+*]\s*0)*$/)) {
+        simplified = '0';
+      }
+
+      return simplified;
+
+    } catch (error) {
+      console.warn('Error simplifying expression:', error);
+      return expression; // Return original if simplification fails
+    }
+  }
+
+  /**
+   * Evaluate simple arithmetic expressions
+   */
+  evaluateSimpleArithmetic(expression) {
+    try {
+      // Pattern: (number) operation (number)
+      const arithmeticPattern = /\((\d+)\)\s*([-+*])\s*\((\d+)\)/g;
+      
+      return expression.replace(arithmeticPattern, (match, num1, operator, num2) => {
+        const a = parseInt(num1);
+        const b = parseInt(num2);
+        
+        switch (operator) {
+          case '+':
+            return (a + b).toString();
+          case '-':
+            return (a - b).toString();
+          case '*':
+            return (a * b).toString();
+          default:
+            return match; // Return original if unknown operator
+        }
+      });
+    } catch (error) {
+      return expression; // Return original if evaluation fails
+    }
+  }
+
+  /**
+   * Animate the result display entrance
+   */
+  animateResultDisplay() {
+    const container = document.querySelector('.clean-result-container');
+    if (container) {
+      container.style.opacity = '0';
+      container.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        container.style.transition = 'all 0.5s ease';
+        container.style.opacity = '1';
+        container.style.transform = 'translateY(0)';
+      }, 50);
+      
+      // Animate components
+      const components = container.querySelectorAll('.vector-component');
+      components.forEach((comp, index) => {
+        comp.style.opacity = '0';
+        comp.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          comp.style.transition = 'all 0.3s ease';
+          comp.style.opacity = '1';
+          comp.style.transform = 'translateX(0)';
+        }, 200 + (index * 100));
+      });
+    }
+  }
+
+  /**
+   * Copy result to clipboard
+   */
+  copyResult(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Show success feedback
+      const button = event.target.closest('.copy-button');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      button.style.color = '#10b981';
+      
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.color = '';
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  }
+
+  /* 
+   * Note: Old complex cross product display functions have been replaced 
+   * with the new clean result display system above.
+   */
+
+  /**
+   * Update the detailed results card
+   */
+  updateDetailedResults(operationResult) {
+    const resultsCard = document.getElementById('matrix-results');
+    const resultsContent = document.getElementById('matrix-result-content');
+    
+    let resultDisplay = '';
+    
+    if (operationResult.isSymbolic) {
+      // Enhanced symbolic result display with proper matrix brackets
+      if (Array.isArray(operationResult.result)) {
+        resultDisplay = `
+          <div class="symbolic-result-section">
+            <h5><i class="fas fa-code"></i> 3D Symbolic Cross Product Result:</h5>
+            <div class="matrix-result-display">
+              <div class="result-bracket-container">
+                <div class="result-bracket left-bracket">
+                  <div class="result-bracket-top"></div>
+                  <div class="result-bracket-middle"></div>
+                  <div class="result-bracket-bottom"></div>
+                </div>
+                <div class="matrix-result-grid size-3x1">
+                  ${operationResult.result.map((expr, index) => `
+                    <div class="result-value symbolic-cross vector matrix-cell" title="Component ${['i', 'j', 'k'][index]}: ${expr}">
+                      <div class="component-label">${['i', 'j', 'k'][index]}:</div>
+                      <div class="component-expression">${expr}</div>
+                    </div>
+                  `).join('')}
+                </div>
+                <div class="result-bracket right-bracket">
+                  <div class="result-bracket-top"></div>
+                  <div class="result-bracket-middle"></div>
+                  <div class="result-bracket-bottom"></div>
+                </div>
+              </div>
+              <div class="result-matrix-label">A × B (Symbolic)</div>
+            </div>
+          </div>
+        `;
+      } else {
+        resultDisplay = `
+          <div class="symbolic-result-section">
+            <h5><i class="fas fa-code"></i> 2D Symbolic Cross Product Result:</h5>
+            <div class="matrix-result-display">
+              <div class="result-bracket-container">
+                <div class="result-bracket left-bracket">
+                  <div class="result-bracket-top"></div>
+                  <div class="result-bracket-middle"></div>
+                  <div class="result-bracket-bottom"></div>
+                </div>
+                <div class="matrix-result-grid size-1x1">
+                  <div class="result-value symbolic-cross scalar matrix-cell" title="Symbolic Result: ${operationResult.result}">
+                    ${operationResult.result}
+                  </div>
+                </div>
+                <div class="result-bracket right-bracket">
+                  <div class="result-bracket-top"></div>
+                  <div class="result-bracket-middle"></div>
+                  <div class="result-bracket-bottom"></div>
+                </div>
+              </div>
+              <div class="result-matrix-label">A × B (Scalar)</div>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      // Numeric result display
+      const enhancedCalculator = new EnhancedMatrixCalculator();
+      const resultData = enhancedCalculator.formatMatrixDisplay(
+        operationResult.result, 
+        `${operationResult.description || 'Result'}`
+      );
+      const matrixHTML = enhancedCalculator.generateMatrixHTML(resultData);
+      
+      resultDisplay = `
+        <div class="matrix-result-display">
+          ${matrixHTML}
+        </div>
+      `;
+    }
+    
+    let html = `
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-header">
+            <h4>${operationResult.description || 'Matrix Operation'}</h4>
+          </div>
+          <div class="result-body">
+            <div class="matrix-operation-summary">
+              <p><strong>Operation:</strong> ${operationResult.symbol || operationResult.operation}</p>
+              <p><strong>Result Type:</strong> ${operationResult.isSymbolic ? 'Symbolic' : 'Numeric'}</p>
+            </div>
+            
+            ${resultDisplay}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    resultsContent.innerHTML = html;
+    resultsCard.style.display = 'block';
+    resultsCard.classList.add('fade-in');
+    
+    // Scroll to results
+    setTimeout(() => {
+      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
+
+  /**
+   * Format symbolic result for display
+   */
+  formatSymbolicResult(symbolicResult) {
+    if (Array.isArray(symbolicResult)) {
+      // 3D cross product symbolic result
+      return `
+        <div class="symbolic-vector">
+          <div class="symbolic-component">i: ${symbolicResult[0]}</div>
+          <div class="symbolic-component">j: ${symbolicResult[1]}</div>
+          <div class="symbolic-component">k: ${symbolicResult[2]}</div>
+        </div>
+      `;
+    } else {
+      // 2D cross product symbolic result
+      return `<div class="symbolic-scalar">${symbolicResult}</div>`;
+    }
+  }
+
+  /**
    * Display primary result in matrix format
    */
   displayPrimaryResult(result, type, rows, cols) {
@@ -777,19 +1247,20 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Create result cell with IG styling
+   * Create result cell with IG styling and 2 decimal places
    */
   createResultCell(value, type, index) {
     const cell = document.createElement('div');
-    cell.className = `result-value ${type}`;
+    cell.className = `result-value ${type} matrix-cell`;
     
-    // Format the value
+    // Format the value to 2 decimal places
     const formattedValue = typeof value === 'number' ? 
-      (Math.abs(value) < 0.0001 ? '0' : value.toFixed(3)) : 
+      (Math.abs(value) < 0.001 ? '0.00' : value.toFixed(2)) : 
       String(value);
     
     cell.textContent = formattedValue;
     cell.setAttribute('aria-label', `Result: ${formattedValue}`);
+    cell.setAttribute('title', `${type.charAt(0).toUpperCase() + type.slice(1)}: ${formattedValue}`);
     
     // Add animation delay based on index
     cell.style.animationDelay = `${index * 0.1}s`;
@@ -798,7 +1269,7 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Display equation results with IG styling
+   * Display equation results with IG styling and 2 decimal places
    */
   displayEquationResults(solution) {
     const resultsCard = document.getElementById('equation-results');
@@ -812,11 +1283,12 @@ class IGMatrixCalculatorUI {
       
       solution.variables.forEach((value, index) => {
         const variable = String.fromCharCode(120 + index);
+        const formattedValue = Math.abs(value) < 0.001 ? '0.00' : value.toFixed(2);
         html += `
           <div class="variable-result">
             <span class="variable-name">${variable}</span>
             <span class="variable-equals">=</span>
-            <span class="variable-value">${value.toFixed(4)}</span>
+            <span class="variable-value">${formattedValue}</span>
           </div>
         `;
       });
@@ -917,14 +1389,23 @@ class IGMatrixCalculatorUI {
     const [rows, cols] = this.currentMatrixSize.split('x').map(Number);
     const matrixA = [];
     const matrixB = [];
+    let hasSymbolic = false;
     
     // Get Matrix A
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
         const input = document.getElementById(`matrix-a-${i}-${j}`);
-        const value = parseFloat(input.value) || 0;
-        row.push(value);
+        const rawValue = input.value.trim();
+        
+        // Check if value contains variables (letters)
+        if (/[a-zA-Z]/.test(rawValue)) {
+          hasSymbolic = true;
+          row.push(rawValue); // Keep as string for symbolic operations
+        } else {
+          const numValue = parseFloat(rawValue) || 0;
+          row.push(numValue);
+        }
       }
       matrixA.push(row);
     }
@@ -934,13 +1415,30 @@ class IGMatrixCalculatorUI {
       const row = [];
       for (let j = 0; j < cols; j++) {
         const input = document.getElementById(`matrix-b-${i}-${j}`);
-        const value = parseFloat(input.value) || 0;
-        row.push(value);
+        const rawValue = input.value.trim();
+        
+        // Check if value contains variables (letters)
+        if (/[a-zA-Z]/.test(rawValue)) {
+          hasSymbolic = true;
+          row.push(rawValue); // Keep as string for symbolic operations
+        } else {
+          const numValue = parseFloat(rawValue) || 0;
+          row.push(numValue);
+        }
       }
       matrixB.push(row);
     }
     
-    return { matrixA, matrixB, rows, cols, operation: this.currentOperation };
+    // Automatically use symbolic operation if variables detected
+    let operation = this.currentOperation;
+    if (hasSymbolic && operation === 'cross') {
+      operation = 'cross_symbolic';
+      console.log('🔄 Auto-switching to symbolic cross product due to variables detected');
+    }
+    
+    console.log('📊 Dual Matrix Data:', { matrixA, matrixB, hasSymbolic, operation });
+    
+    return { matrixA, matrixB, rows, cols, operation };
   }
 
   /**
@@ -958,6 +1456,12 @@ class IGMatrixCalculatorUI {
         return calculator.dotProductVectors(matrixA, matrixB);
       case 'cross':
         return calculator.crossProductVectorsImproved(matrixA, matrixB);
+      case 'cross_symbolic':
+        // Convert matrices to vectors for cross product (flatten if needed)
+        const vectorA = Array.isArray(matrixA[0]) ? matrixA.flat() : matrixA;
+        const vectorB = Array.isArray(matrixB[0]) ? matrixB.flat() : matrixB;
+        console.log('🎯 Calling crossProductSymbolicOperation with:', { vectorA, vectorB });
+        return calculator.crossProductSymbolicOperation(vectorA, vectorB);
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
@@ -1085,12 +1589,12 @@ class IGMatrixCalculatorUI {
 
   formatMatrixResult(result) {
     if (typeof result === 'number') {
-      return Math.abs(result) < 0.0001 ? '0' : result.toFixed(4);
+      return Math.abs(result) < 0.001 ? '0.00' : result.toFixed(2);
     } else if (Array.isArray(result)) {
       return result.map(row => 
         Array.isArray(row) ? 
-        `[${row.map(val => (Math.abs(val) < 0.0001 ? '0' : val.toFixed(3))).join(', ')}]` :
-        (Math.abs(row) < 0.0001 ? '0' : row.toFixed(3))
+        `[${row.map(val => (Math.abs(val) < 0.001 ? '0.00' : val.toFixed(2))).join(', ')}]` :
+        (Math.abs(row) < 0.001 ? '0.00' : row.toFixed(2))
       ).join('<br>');
     } else {
       return String(result);
@@ -1159,6 +1663,67 @@ class IGMatrixCalculatorUI {
     
     // Allow only numbers, decimal point, and minus sign
     if (!/[\d\.\-]/.test(char)) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple decimal points
+    if (char === '.' && currentValue.indexOf('.') !== -1) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Prevent multiple minus signs or minus not at beginning
+    if (char === '-' && (currentValue.indexOf('-') !== -1 || input.selectionStart !== 0)) {
+      event.preventDefault();
+      return;
+    }
+  }
+
+  /**
+   * Validate alphanumeric input (numbers and variables like '3x')
+   */
+  validateAlphanumericInput(event) {
+    const input = event.target;
+    const value = input.value;
+    
+    // Allow empty input, numbers, variables, decimal points, and negative signs
+    // Pattern allows: numbers, variables (like 'x', 'y'), combinations (like '3x', '-2y'), decimals
+    const validPattern = /^-?(\d*\.?\d*[a-zA-Z]*|\d*[a-zA-Z]+\d*\.?\d*|[a-zA-Z]+\d*\.?\d*|\d*\.?\d*)$/;
+    
+    if (value === '' || value === '-' || value === '.' || validPattern.test(value)) {
+      // Remove error styling and restore normal styling
+      input.style.borderColor = 'var(--glass-border)';
+      input.style.backgroundColor = 'var(--surface-black)';
+      input.style.color = 'var(--text-primary)';
+    } else {
+      // Show error styling for invalid input
+      input.style.borderColor = 'var(--error, #ef4444)';
+      input.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+      input.style.color = 'var(--text-primary)';
+    }
+  }
+
+  /**
+   * Restrict input to alphanumeric characters (numbers, letters, decimal, minus)
+   */
+  restrictToAlphanumericInput(event) {
+    const char = String.fromCharCode(event.which);
+    const input = event.target;
+    const currentValue = input.value;
+    
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey) ||
+        (event.keyCode === 67 && event.ctrlKey) ||
+        (event.keyCode === 86 && event.ctrlKey) ||
+        (event.keyCode === 88 && event.ctrlKey)) {
+      return;
+    }
+    
+    // Allow numbers, letters, decimal point, and minus sign
+    if (!/[\d\.\-a-zA-Z]/.test(char)) {
       event.preventDefault();
       return;
     }
