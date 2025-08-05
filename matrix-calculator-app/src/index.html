@@ -48,10 +48,6 @@
                     <i class="fas fa-th"></i>
                     <span>Matrix</span>
                 </button>
-                <button class="nav-item" data-section="equations">
-                    <i class="fas fa-equals"></i>
-                    <span>Equations</span>
-                </button>
                 <button class="nav-item" data-section="coordinates">
                     <i class="fas fa-compass"></i>
                     <span>Coordinates</span>
@@ -414,93 +410,6 @@
                 </div>
             </section>
 
-            <!-- Equations Section -->
-            <section class="feed-section" id="equations-section">
-                <!-- Equation Size Selector -->
-                <div class="story-card">
-                    <div class="story-header">
-                        <div class="story-avatar">
-                            <i class="fas fa-equals"></i>
-                        </div>
-                        <div class="story-info">
-                            <h3>Equation Solver</h3>
-                            <p>Linear system solver</p>
-                        </div>
-                    </div>
-                    <div class="story-content">
-                        <div class="equation-size-grid">
-                            <button class="equation-tile" data-unknowns="2">
-                                <div class="tile-badge">2</div>
-                                <div class="tile-info">
-                                    <span class="tile-title">2 Variables</span>
-                                    <span class="tile-subtitle">x, y system</span>
-                                </div>
-                            </button>
-                            <button class="equation-tile" data-unknowns="3">
-                                <div class="tile-badge">3</div>
-                                <div class="tile-info">
-                                    <span class="tile-title">3 Variables</span>
-                                    <span class="tile-subtitle">x, y, z system</span>
-                                </div>
-                            </button>
-                            <button class="equation-tile" data-unknowns="4">
-                                <div class="tile-badge">4</div>
-                                <div class="tile-info">
-                                    <span class="tile-title">4 Variables</span>
-                                    <span class="tile-subtitle">x, y, z, w system</span>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Equation Input Story -->
-                <div class="story-card equation-input-story" id="equation-input-container" style="display: none;">
-                    <div class="story-header">
-                        <div class="story-avatar">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                        <div class="story-info">
-                            <h3>Enter Equations</h3>
-                            <p>Set up your linear system</p>
-                        </div>
-                        <button class="story-action" id="clear-equation">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <div class="story-content">
-                        <div class="equation-container">
-                            <div class="equation-grid" id="equation-grid"></div>
-                            <div class="action-buttons">
-                                <button class="action-btn primary" id="solve-equation">
-                                    <i class="fas fa-calculator"></i>
-                                    <span>Solve System</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Equation Results Story -->
-                <div class="story-card" id="equation-results" style="display: none;">
-                    <div class="story-header">
-                        <div class="story-avatar">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="story-info">
-                            <h3>Solution Found</h3>
-                            <p>Your equation solution</p>
-                        </div>
-                        <button class="story-action share-btn">
-                            <i class="fas fa-share"></i>
-                        </button>
-                    </div>
-                    <div class="story-content">
-                        <div class="solution-display" id="equation-result-content"></div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Coordinates Section -->
             <section class="feed-section" id="coordinates-section">
                 <!-- Coordinate Converter Card -->
@@ -787,63 +696,6 @@
                     </div>
                 </section>
 
-                <!-- Equation Solver Section -->
-                <section class="calculator-section" id="equation-section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-equals" aria-hidden="true"></i>
-                            Equation Solver
-                        </h2>
-                        <p class="section-description">Solve linear equations with multiple unknowns</p>
-                    </div>
-
-                    <!-- Equation Size Selection -->
-                    <div class="equation-size-selector" role="group" aria-label="Number of unknowns selection">
-                        <h3 class="selector-title">Number of Unknowns:</h3>
-                        <div class="size-buttons">
-                            <button class="size-btn" data-unknowns="2">
-                                <span class="size-label">2</span>
-                                <span class="size-description">2 Variables</span>
-                            </button>
-                            <button class="size-btn" data-unknowns="3">
-                                <span class="size-label">3</span>
-                                <span class="size-description">3 Variables</span>
-                            </button>
-                            <button class="size-btn" data-unknowns="4">
-                                <span class="size-label">4</span>
-                                <span class="size-description">4 Variables</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Equation Input Area (Dynamic) -->
-                    <div class="equation-input-container" id="equation-input-container" style="display: none;">
-                        <div class="input-section">
-                            <h3 class="input-title">Enter Equations:</h3>
-                            <div class="equation-grid" id="equation-grid"></div>
-                            <div class="calculation-controls">
-                                <button class="action-btn primary" id="solve-equation">
-                                    <i class="fas fa-solve"></i>
-                                    Solve
-                                </button>
-                                <button class="action-btn secondary" id="clear-equation">
-                                    <i class="fas fa-trash"></i>
-                                    Clear
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Results Display -->
-                        <div class="results-section" id="equation-results" style="display: none;">
-                            <h3 class="results-title">
-                                <i class="fas fa-check-circle"></i>
-                                Solution
-                            </h3>
-                            <div class="results-content" id="equation-result-content"></div>
-                        </div>
-                    </div>
-                </section>
-
             </div>
         </main>
 
@@ -859,7 +711,6 @@
     <script src="https://unpkg.com/mathjs@12.4.0/lib/browser/math.min.js"></script>
     <script src="js/app.js"></script>
     <script src="js/matrix-calculator.js"></script>
-    <script src="js/equation-solver.js"></script>
     <script src="js/ig-ui-handler.js"></script>
     <script src="js/coordinate-converter.js"></script>
 </body>

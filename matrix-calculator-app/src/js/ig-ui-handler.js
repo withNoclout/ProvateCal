@@ -6,10 +6,8 @@
 class IGMatrixCalculatorUI {
   constructor() {
     this.currentMatrixSize = null;
-    this.currentEquationSize = null;
     this.currentSection = 'home';
     this.matrixData = [];
-    this.equationData = [];
     this.matrixMode = 'single'; // 'single' or 'dual'
     this.currentOperation = 'add'; // for dual matrix operations
     
@@ -22,7 +20,6 @@ class IGMatrixCalculatorUI {
   init() {
     this.bindNavigationEvents();
     this.bindMatrixEvents();
-    this.bindEquationEvents();
     this.bindCalculatorActions();
     this.bindQuickActions();
     this.bindMatrixModeEvents();
@@ -110,17 +107,6 @@ class IGMatrixCalculatorUI {
 
   /**
    * Equation size selection events  
-   */
-  bindEquationEvents() {
-    const equationTiles = document.querySelectorAll('.equation-tile');
-    equationTiles.forEach(tile => {
-      tile.addEventListener('click', (e) => {
-        const unknowns = parseInt(e.currentTarget.dataset.unknowns);
-        this.selectEquationSize(unknowns);
-      });
-    });
-  }
-
   /**
    * Calculator action events
    */
@@ -135,18 +121,6 @@ class IGMatrixCalculatorUI {
     
     if (clearMatrixBtn) {
       clearMatrixBtn.addEventListener('click', () => this.clearMatrix());
-    }
-
-    // Equation solving
-    const solveEquationBtn = document.getElementById('solve-equation');
-    const clearEquationBtn = document.getElementById('clear-equation');
-    
-    if (solveEquationBtn) {
-      solveEquationBtn.addEventListener('click', () => this.solveEquations());
-    }
-    
-    if (clearEquationBtn) {
-      clearEquationBtn.addEventListener('click', () => this.clearEquations());
     }
   }
 
@@ -268,14 +242,6 @@ class IGMatrixCalculatorUI {
         this.showSection('matrix');
         setTimeout(() => this.selectMatrixSize('3x3'), 300);
         break;
-      case 'equations-2':
-        this.showSection('equations');
-        setTimeout(() => this.selectEquationSize(2), 300);
-        break;
-      case 'equations-3':
-        this.showSection('equations');
-        setTimeout(() => this.selectEquationSize(3), 300);
-        break;
     }
   }
 
@@ -303,29 +269,6 @@ class IGMatrixCalculatorUI {
     
     // Generate matrix grid
     this.generateMatrixGrid(rows, cols);
-    
-    // Scroll to input area
-    setTimeout(() => {
-      container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  }
-
-  /**
-   * Select equation size and generate input fields
-   */
-  selectEquationSize(unknowns) {
-    // Update active state
-    this.updateActiveButton('.equation-tile', `[data-unknowns="${unknowns}"]`);
-    
-    this.currentEquationSize = unknowns;
-    
-    // Show input container with animation
-    const container = document.getElementById('equation-input-container');
-    container.style.display = 'block';
-    container.classList.add('slide-in');
-    
-    // Generate equation grid
-    this.generateEquationGrid(unknowns);
     
     // Scroll to input area
     setTimeout(() => {
@@ -410,22 +353,368 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Generate equation input grid
+   * Create a clean equation row
    */
-  generateEquationGrid(unknowns) {
-    const grid = document.getElementById('equation-grid');
-    grid.innerHTML = '';
+  createCleanEquationRow(equationIndex, totalUnknowns) {
+    const row = document.createElement('div');
+    row.className = 'clean-equation-row';
     
-    // Create equation inputs
-    for (let i = 0; i < unknowns; i++) {
-      const equationRow = this.createEquationRow(i, unknowns);
-      grid.appendChild(equationRow);
+    // Equation number label
+    const label = document.createElement('div');
+    label.className = 'equation-label';
+    label.textContent = equationIndex + 1;
+    row.appendChild(label);
+    
+    // Create coefficient inputs with variable labels
+    const variables = ['x', 'y', 'z', 'w'];
+    
+    for (let i = 0; i < totalUnknowns; i++) {
+      // Coefficient input
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.className = 'clean-input coefficient-input';
+      input.id = `eq-${equationIndex}-coeff-${i}`;
+      input.placeholder = '0';
+      input.step = 'any';
+      input.setAttribute('data-equation', equationIndex);
+      input.setAttribute('data-position', i);
+      
+      // Variable label
+      const varLabel = document.createElement('span');
+      varLabel.className = 'variable-label';
+      varLabel.textContent = variables[i];
+      
+      row.appendChild(input);
+      row.appendChild(varLabel);
+      
+      // Add operator (+ or =)
+      if (i < totalUnknowns - 1) {
+        const operator = document.createElement('span');
+        operator.className = 'operator-label';
+        operator.textContent = '+';
+        row.appendChild(operator);
+      }
+    }
+    
+    // Equals sign
+    const equals = document.createElement('span');
+    equals.className = 'equals-label';
+    equals.textContent = '=';
+    row.appendChild(equals);
+    
+    // Result input
+    const resultInput = document.createElement('input');
+    resultInput.type = 'number';
+    resultInput.className = 'clean-input result-input';
+    resultInput.id = `eq-${equationIndex}-result`;
+    resultInput.placeholder = '0';
+    resultInput.step = 'any';
+    resultInput.setAttribute('data-equation', equationIndex);
+    resultInput.setAttribute('data-position', 'result');
+    
+    row.appendChild(resultInput);
+    
+    return row;
+  }
+
+  /**
+   * Add clean input event listeners
+   */
+  addCleanInputEvents() {
+    const inputs = document.querySelectorAll('.clean-input');
+    
+    inputs.forEach((input, index) => {
+      // Input validation
+      input.addEventListener('input', (e) => {
+        this.validateCleanInput(e.target);
+      });
+      
+      // Keyboard navigation
+      input.addEventListener('keydown', (e) => {
+        this.handleCleanNavigation(e, input, inputs);
+      });
+      
+      // Focus styling
+      input.addEventListener('focus', (e) => {
+        e.target.parentElement.style.borderColor = '#3b82f6';
+      });
+      
+      input.addEventListener('blur', (e) => {
+        e.target.parentElement.style.borderColor = '#e2e8f0';
+      });
+    });
+  }
+
+  /**
+   * Validate clean input
+   */
+  validateCleanInput(input) {
+    const value = input.value;
+    
+    // Allow empty, numbers, and negative numbers
+    if (value === '' || (!isNaN(value) && isFinite(value))) {
+      input.style.borderColor = '#d1d5db';
+      input.style.backgroundColor = 'white';
+      return true;
+    } else {
+      input.style.borderColor = '#ef4444';
+      input.style.backgroundColor = '#fef2f2';
+      return false;
+    }
+  }
+
+  /**
+   * Handle clean keyboard navigation
+   */
+  handleCleanNavigation(event, currentInput, allInputs) {
+    const currentIndex = Array.from(allInputs).indexOf(currentInput);
+    
+    switch (event.key) {
+      case 'Enter':
+        event.preventDefault();
+        const nextInput = allInputs[currentIndex + 1];
+        if (nextInput) {
+          nextInput.focus();
+        } else {
+          // All inputs filled, try to solve
+          this.solveCleanSystem();
+        }
+        break;
+        
+      case 'ArrowRight':
+      case 'Tab':
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          const next = allInputs[currentIndex + 1];
+          if (next) next.focus();
+        }
+        break;
+        
+      case 'ArrowLeft':
+        event.preventDefault();
+        const prev = allInputs[currentIndex - 1];
+        if (prev) prev.focus();
+        break;
+        
+      case 'ArrowDown':
+        event.preventDefault();
+        // Move to same position in next equation
+        const equation = parseInt(currentInput.getAttribute('data-equation'));
+        const position = currentInput.getAttribute('data-position');
+        const nextEqInput = document.querySelector(`[data-equation="${equation + 1}"][data-position="${position}"]`);
+        if (nextEqInput) nextEqInput.focus();
+        break;
+        
+      case 'ArrowUp':
+        event.preventDefault();
+        // Move to same position in previous equation
+        const prevEquation = parseInt(currentInput.getAttribute('data-equation'));
+        const prevPosition = currentInput.getAttribute('data-position');
+        const prevEqInput = document.querySelector(`[data-equation="${prevEquation - 1}"][data-position="${prevPosition}"]`);
+        if (prevEqInput) prevEqInput.focus();
+        break;
+    }
+  }
+
+  /**
+   * Generate example system
+   */
+  generateExample() {
+    const size = this.currentSystemSize || 2;
+    const container = document.getElementById('clean-equations-container');
+    if (!container) return;
+    
+    // Example systems
+    const examples = {
+      2: [
+        { coeffs: [[2, 1], [1, -1]], results: [5, 1] },  // x=2, y=1
+        { coeffs: [[3, -2], [1, 1]], results: [4, 3] },   // x=2, y=1
+        { coeffs: [[1, 2], [3, -1]], results: [7, 2] }    // x=3, y=2
+      ],
+      3: [
+        { coeffs: [[1, 1, 1], [2, -1, 1], [1, 2, -1]], results: [6, 3, 1] }, // x=1, y=2, z=3
+        { coeffs: [[2, 1, -1], [1, -1, 2], [3, 2, 1]], results: [1, 7, 12] }  // x=1, y=2, z=3
+      ],
+      4: [
+        { coeffs: [[1, 1, 1, 1], [2, -1, 1, 0], [1, 2, -1, 1], [0, 1, 2, -1]], results: [10, 3, 2, 5] }
+      ]
+    };
+    
+    const exampleSet = examples[size];
+    if (!exampleSet || exampleSet.length === 0) return;
+    
+    const example = exampleSet[Math.floor(Math.random() * exampleSet.length)];
+    
+    // Fill in the example values with animation
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        const input = document.getElementById(`eq-${i}-coeff-${j}`);
+        if (input) {
+          setTimeout(() => {
+            input.value = example.coeffs[i][j];
+            input.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+              input.style.transform = 'scale(1)';
+            }, 150);
+          }, (i * size + j) * 100);
+        }
+      }
+      
+      const resultInput = document.getElementById(`eq-${i}-result`);
+      if (resultInput) {
+        setTimeout(() => {
+          resultInput.value = example.results[i];
+          resultInput.style.transform = 'scale(1.1)';
+          setTimeout(() => {
+            resultInput.style.transform = 'scale(1)';
+          }, 150);
+        }, (i * size + size) * 100);
+      }
+    }
+  }
+
+  /**
+   * Solve clean system
+   */
+  async solveCleanSystem() {
+    try {
+      const size = this.currentSystemSize || 2;
+      const matrix = [];
+      const constants = [];
+      
+      // Collect input values
+      for (let i = 0; i < size; i++) {
+        const row = [];
+        for (let j = 0; j < size; j++) {
+          const input = document.getElementById(`eq-${i}-coeff-${j}`);
+          const value = parseFloat(input.value) || 0;
+          row.push(value);
+        }
+        matrix.push(row);
+        
+        const resultInput = document.getElementById(`eq-${i}-result`);
+        const result = parseFloat(resultInput.value) || 0;
+        constants.push(result);
+      }
+      
+      // Use the equation solver
+      const solver = new EquationSolver();
+      const solution = solver.solveLinearSystem(matrix, constants);
+      
+      this.displayCleanSolution(solution);
+      
+    } catch (error) {
+      this.displayCleanError(error.message);
+      console.error('System solving error:', error);
+    }
+  }
+
+  /**
+   * Display clean solution
+   */
+  displayCleanSolution(solution) {
+    const container = document.getElementById('clean-results-container');
+    const valuesContainer = document.getElementById('solution-values');
+    
+    if (!container || !valuesContainer) return;
+    
+    valuesContainer.innerHTML = '';
+    
+    if (solution && solution.length > 0) {
+      const variables = ['x', 'y', 'z', 'w'];
+      
+      solution.forEach((value, index) => {
+        const item = document.createElement('div');
+        item.className = 'solution-item';
+        
+        const variable = document.createElement('span');
+        variable.className = 'solution-variable';
+        variable.textContent = variables[index];
+        
+        const equals = document.createElement('span');
+        equals.className = 'solution-equals';
+        equals.textContent = ' = ';
+        
+        const solutionValue = document.createElement('span');
+        solutionValue.className = 'solution-value';
+        solutionValue.textContent = Number(value).toFixed(3).replace(/\.?0+$/, '');
+        
+        item.appendChild(variable);
+        item.appendChild(equals);
+        item.appendChild(solutionValue);
+        
+        valuesContainer.appendChild(item);
+      });
+      
+      container.style.display = 'block';
+      
+      // Smooth scroll to results
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+      
+    } else {
+      this.displayCleanError('No solution found or infinite solutions');
+    }
+  }
+
+  /**
+   * Display clean error
+   */
+  displayCleanError(message) {
+    const container = document.getElementById('clean-results-container');
+    const valuesContainer = document.getElementById('solution-values');
+    
+    if (!container || !valuesContainer) return;
+    
+    valuesContainer.innerHTML = `
+      <div class="solution-item" style="color: #ef4444;">
+        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+        ${message}
+      </div>
+    `;
+    
+    container.style.display = 'block';
+    container.style.background = '#fef2f2';
+    container.style.borderColor = '#ef4444';
+    
+    setTimeout(() => {
+      container.style.background = '#f0fdf4';
+      container.style.borderColor = '#16a34a';
+    }, 3000);
+  }
+
+  /**
+   * Generate matrix input grid with IG styling
+   */
+  generateMatrixGrid(rows, cols) {
+    if (this.matrixMode === 'single') {
+      this.generateSingleMatrixGrid(rows, cols);
+    } else {
+      this.generateDualMatrixGrids(rows, cols);
     }
 
-    // Focus first input
-    const firstInput = grid.querySelector('.equation-input');
-    if (firstInput) {
-      setTimeout(() => firstInput.focus(), 200);
+    // Hide result section initially
+    const resultContainer = document.getElementById('matrix-equals-section');
+    if (resultContainer) {
+      resultContainer.style.display = 'none';
+    }
+  }
+
+  /**
+   * Generate single matrix grid
+   */
+  generateSingleMatrixGrid(rows, cols) {
+    const container = document.getElementById('matrix-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const input = this.createMatrixInput(i, j);
+        container.appendChild(input);
+      }
     }
   }
 
@@ -465,6 +754,170 @@ class IGMatrixCalculatorUI {
     input.addEventListener('wheel', (e) => e.preventDefault());
     
     return input;
+  }
+
+  /**
+   * Validate individual input
+   */
+  validateInput(input) {
+    const value = input.value.trim();
+    const inputGroup = input.parentElement;
+    
+    // Remove previous validation classes
+    inputGroup.classList.remove('input-valid', 'input-invalid');
+    
+    if (value === '') {
+      inputGroup.classList.add('input-empty');
+      return false;
+    } else {
+      inputGroup.classList.remove('input-empty');
+    }
+    
+    // Check if valid number
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) {
+      inputGroup.classList.add('input-invalid');
+      return false;
+    } else {
+      inputGroup.classList.add('input-valid');
+      return true;
+    }
+  }
+
+  /**
+   * Update validation summary
+   */
+  updateValidationSummary() {
+    const validationSummary = document.getElementById('equation-validation');
+    if (!validationSummary) return;
+    
+    const inputs = document.querySelectorAll('.modern-equation-input');
+    const filledInputs = Array.from(inputs).filter(input => input.value.trim() !== '');
+    const validInputs = Array.from(inputs).filter(input => {
+      const value = parseFloat(input.value);
+      return !isNaN(value);
+    });
+    
+    const totalInputs = inputs.length;
+    const progress = validInputs.length / totalInputs;
+    
+    let message = '';
+    let iconClass = 'fas fa-info-circle';
+    let statusClass = 'info';
+    
+    if (progress === 0) {
+      message = 'Enter coefficients for each variable and the result value';
+    } else if (progress < 0.5) {
+      message = `${validInputs.length}/${totalInputs} fields completed. Keep going!`;
+      iconClass = 'fas fa-clock';
+      statusClass = 'warning';
+    } else if (progress < 1) {
+      message = `${validInputs.length}/${totalInputs} fields completed. Almost there!`;
+      iconClass = 'fas fa-check-circle';
+      statusClass = 'success';
+    } else {
+      message = 'All fields completed! Ready to solve.';
+      iconClass = 'fas fa-check-double';
+      statusClass = 'success';
+    }
+    
+    validationSummary.className = `validation-summary ${statusClass}`;
+    validationSummary.innerHTML = `
+      <div class="validation-icon">
+        <i class="${iconClass}"></i>
+      </div>
+      <span class="validation-text">${message}</span>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: ${progress * 100}%"></div>
+      </div>
+    `;
+  }
+
+  /**
+   * Handle keyboard navigation between equation inputs
+   */
+  handleEquationNavigation(event, equationIndex, position) {
+    const key = event.key;
+    const currentInput = event.target;
+    
+    if (key === 'Enter') {
+      event.preventDefault();
+      
+      // Find next input
+      const inputs = Array.from(document.querySelectorAll('.modern-equation-input'));
+      const currentIndex = inputs.indexOf(currentInput);
+      const nextInput = inputs[currentIndex + 1];
+      
+      if (nextInput) {
+        nextInput.focus();
+      } else {
+        // All inputs filled, trigger solve
+        const solveBtn = document.getElementById('solve-equation');
+        if (solveBtn && !solveBtn.disabled) {
+          solveBtn.click();
+        }
+      }
+    } else if (key === 'ArrowRight' || key === 'Tab') {
+      // Navigate to next input
+      const inputs = Array.from(document.querySelectorAll('.modern-equation-input'));
+      const currentIndex = inputs.indexOf(currentInput);
+      const nextInput = inputs[currentIndex + 1];
+      
+      if (nextInput && key === 'ArrowRight') {
+        event.preventDefault();
+        nextInput.focus();
+      }
+    } else if (key === 'ArrowLeft') {
+      // Navigate to previous input
+      const inputs = Array.from(document.querySelectorAll('.modern-equation-input'));
+      const currentIndex = inputs.indexOf(currentInput);
+      const prevInput = inputs[currentIndex - 1];
+      
+      if (prevInput) {
+        event.preventDefault();
+        prevInput.focus();
+      }
+    }
+  }
+
+  /**
+   * Show validation message
+   */
+  showValidationMessage(message, type = 'info') {
+    const validationSummary = document.getElementById('equation-validation');
+    if (!validationSummary) return;
+    
+    const iconMap = {
+      info: 'fas fa-info-circle',
+      success: 'fas fa-check-circle',
+      warning: 'fas fa-exclamation-triangle',
+      error: 'fas fa-exclamation-circle'
+    };
+    
+    validationSummary.className = `validation-summary ${type}`;
+    validationSummary.innerHTML = `
+      <div class="validation-icon">
+        <i class="${iconMap[type]}"></i>
+      </div>
+      <span class="validation-text">${message}</span>
+    `;
+    
+    // Auto-clear success messages after 3 seconds
+    if (type === 'success') {
+      setTimeout(() => {
+        this.updateValidationSummary();
+      }, 3000);
+    }
+  }
+
+  /**
+   * Clear validation message
+   */
+  clearValidationMessage() {
+    const validationSummary = document.getElementById('equation-validation');
+    if (validationSummary && validationSummary.classList.contains('error')) {
+      this.updateValidationSummary();
+    }
   }
 
   /**
