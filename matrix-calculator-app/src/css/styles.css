@@ -789,72 +789,93 @@ body {
   border-radius: 1px;
 }
 
-/* Enhanced Result Value Cells - Premium Design with Matrix Support */
+/* Clean Result Value Display - NO BOXES, NO BACKGROUNDS */
 .result-value {
-  width: 110px;
-  height: 80px;
-  border: 3px solid var(--accent-teal);
-  border-radius: var(--radius-medium);
-  background: linear-gradient(135deg, 
-    rgba(20, 184, 166, 0.15) 0%, 
-    rgba(29, 161, 242, 0.10) 50%,
-    rgba(20, 184, 166, 0.15) 100%
-  );
-  color: var(--text-primary);
-  font-size: var(--text-xl);
-  font-weight: 800;
-  font-family: var(--font-mono);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  backdrop-filter: blur(15px);
-  box-shadow: 
-    0 8px 25px rgba(20, 184, 166, 0.4),
-    inset 0 1px 20px rgba(20, 184, 166, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
-  animation: result-appear 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: var(--transition-glow);
-  overflow: hidden;
-  /* Enhanced number formatting */
-  font-feature-settings: 'tnum' 1, 'frac' 1;
-  letter-spacing: 0.02em;
+  /* NO container sizing - let content determine size */
+  width: auto;
+  height: auto;
+  
+  /* NO padding - clean text only */
+  padding: 0;
+  margin: 8px 0;
+  
+  /* Clean monospace font */
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 1.125rem;
+  font-weight: 500;
+  
+  /* Text handling - allow overflow to be visible */
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0;
+  
+  /* Simple centering */
+  display: block;
+  
+  /* NO VISUAL STYLING - plain white text only */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  
+  /* NO effects */
+  backdrop-filter: none;
+  box-shadow: none;
+  animation: none;
+  transition: none;
+  
+  /* NO special formatting */
+  font-feature-settings: normal;
+  flex-shrink: 1;
+  box-sizing: content-box;
 }
 
-/* Scalar result styling - single values */
+/* Clean equals symbol for result display */
+.equals-symbol {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-right: 1rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* NO content-aware sizing - all results display the same clean way */
 .result-value.scalar {
-  font-size: var(--text-2xl);
-  font-weight: 900;
-  width: 150px;
-  height: 100px;
-  font-feature-settings: 'tnum' 1;
+  font-size: 1.25rem;
 }
 
-/* Vector result styling - for 1D results */
 .result-value.vector {
-  font-size: var(--text-lg);
-  font-weight: 800;
-  width: 120px;
-  height: 85px;
+  font-size: 1.125rem;
 }
 
-/* Matrix cell styling - for matrix results */
 .result-value.matrix-cell {
-  font-size: var(--text-base);
-  font-weight: 700;
-  width: 110px;
-  height: 80px;
-  /* Ensure consistent decimal place display */
-  font-variant-numeric: tabular-nums;
+  font-size: 1.125rem;
 }
 
 /* Matrix Result Container with Brackets */
 .matrix-result-display {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  margin: var(--space-lg) 0;
+  gap: 1rem;
+  margin: 1.5rem 0;
   justify-content: center;
+}
+
+/* Clean matrix result grid for vertical stacking */
+.matrix-result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Override for horizontal matrices if needed */
+.matrix-result-grid.horizontal {
+  flex-direction: row;
 }
 
 .result-bracket-container {
@@ -1236,24 +1257,31 @@ body {
   
   .matrix-input,
   .result-value {
-    width: 85px;
-    height: 70px;
-    font-size: var(--text-lg);
+    min-width: 140px;
+    width: fit-content;
+    max-width: 280px;
+    height: 90px;
+    padding: 12px 20px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
   }
-  
+
   .result-value.scalar {
-    width: 120px;
-    height: 85px;
-    font-size: var(--text-xl);
+    min-width: 160px;
+    width: fit-content;
+    max-width: 320px;
+    height: 100px;
+    padding: 12px 24px;
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
   }
-  
+
   .result-value.vector {
-    width: 100px;
-    height: 75px;
-    font-size: var(--text-base);
-  }
-  
-  /* Responsive sizing for symbolic cross product results */
+    min-width: 140px;
+    width: fit-content;
+    max-width: 280px;
+    height: 90px;
+    padding: 12px 20px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+  }  /* Responsive sizing for symbolic cross product results */
   .result-value.symbolic-cross {
     width: 140px;
     min-width: 140px;
@@ -3707,7 +3735,292 @@ body {
   }
 }
 
-/* Simple Cross Product Result Display */
+/* Clean Minimal 3D Cross Product Result Display */
+.cross-product-result-clean {
+  background: transparent;
+  padding: 2rem 1rem;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.clean-result-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.equals-symbol-clean {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 0.5rem; /* Slight offset to align with first number */
+}
+
+.result-numbers-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.result-number-clean {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.scalar-number-clean {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.result-label-clean {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .clean-result-layout {
+    gap: 1.5rem;
+  }
+  
+  .equals-symbol-clean {
+    font-size: 1.5rem;
+  }
+  
+  .result-number-clean {
+    font-size: 1rem;
+  }
+  
+  .scalar-number-clean {
+    font-size: 1.125rem;
+  }
+}
+
+/* Legacy Modern Cross Product Result (kept for reference) */
+.cross-product-result-modern {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.result-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.equals-symbol {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--accent-teal);
+  align-self: flex-start;
+  margin-top: 3rem; /* Align with middle of 3-row vector */
+}
+
+.result-vector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.result-value-box {
+  /* Container sizing with exact specifications */
+  min-width: 160px;
+  width: auto;
+  max-width: 300px;
+  height: 80px;
+  
+  /* Padding for visual spacing */
+  padding: 16px 24px;
+  
+  /* Monospace font requirement */
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  
+  /* Text handling as specified */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  
+  /* Perfect centering */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Visual styling - neon green outline */
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--text-primary);
+  
+  /* Effects */
+  box-shadow: 
+    0 4px 16px rgba(16, 185, 129, 0.2),
+    inset 0 1px 8px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  
+  /* Animation preparation */
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.result-value-box:hover {
+  border-color: #059669;
+  background: rgba(16, 185, 129, 0.12);
+  box-shadow: 
+    0 6px 20px rgba(16, 185, 129, 0.3),
+    inset 0 1px 12px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
+}
+
+.result-value-box.animate-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.result-value-box.copied {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  animation: pulse 0.3s ease-in-out;
+}
+
+.result-number {
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+}
+
+.copy-feedback {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.scalar-result-box {
+  /* Same styling as result-value-box but for single values */
+  min-width: 180px;
+  width: auto;
+  max-width: 320px;
+  height: 90px;
+  padding: 20px 28px;
+  
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--text-primary);
+  
+  box-shadow: 
+    0 4px 16px rgba(16, 185, 129, 0.2),
+    inset 0 1px 8px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.scalar-result-box:hover {
+  border-color: #059669;
+  background: rgba(16, 185, 129, 0.12);
+  box-shadow: 
+    0 6px 20px rgba(16, 185, 129, 0.3),
+    inset 0 1px 12px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
+}
+
+.result-label {
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-label strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .result-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .equals-symbol {
+    margin-top: 0;
+    font-size: 2rem;
+  }
+  
+  .result-value-box,
+  .scalar-result-box {
+    min-width: 140px;
+    font-size: 1rem;
+    padding: 14px 20px;
+  }
+}
+
+/* Legacy Simple Cross Product Result (fallback) */
 .simple-cross-result {
   background: white;
   border: 2px solid #e2e8f0;

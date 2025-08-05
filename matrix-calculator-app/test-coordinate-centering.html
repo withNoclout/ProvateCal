@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Converter Result Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .coordinate-result {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 20px 0;
+            margin-top: 1rem;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #333; /* Just for testing visibility */
+        }
+
+        .result-display {
+            text-align: center;
+            width: 100%;
+            border: 1px solid #555; /* Just for testing visibility */
+        }
+
+        .result-value {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 24px;
+            font-weight: 600;
+            color: #00ff88;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            min-height: 24px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: clip;
+            border: 1px solid #777; /* Just for testing visibility */
+        }
+    </style>
+</head>
+<body>
+    <h2>Coordinate Converter Result Centering Test</h2>
+    
+    <div class="coordinate-result">
+        <div class="result-header">
+            <span>→ Result</span>
+        </div>
+        <div class="result-display">
+            <div class="result-value success">
+                235.96∠30°
+            </div>
+        </div>
+    </div>
+
+    <div class="coordinate-result">
+        <div class="result-header">
+            <span>→ Result</span>
+        </div>
+        <div class="result-display">
+            <div class="result-value success">
+                (3, 4)
+            </div>
+        </div>
+    </div>
+
+    <div class="coordinate-result">
+        <div class="result-header">
+            <span>→ Result</span>
+        </div>
+        <div class="result-display">
+            <div class="result-value success">
+                1234.5678∠-45.123°
+            </div>
+        </div>
+    </div>
+
+    <p>✅ All result values should be perfectly centered horizontally</p>
+    <p>📱 Test on different screen sizes to ensure responsiveness</p>
+</body>
+</html>

@@ -52,6 +52,10 @@
                     <i class="fas fa-equals"></i>
                     <span>Equations</span>
                 </button>
+                <button class="nav-item" data-section="coordinates">
+                    <i class="fas fa-compass"></i>
+                    <span>Coordinates</span>
+                </button>
                 <button class="nav-item" data-section="history">
                     <i class="fas fa-history"></i>
                     <span>History</span>
@@ -497,6 +501,97 @@
                 </div>
             </section>
 
+            <!-- Coordinates Section -->
+            <section class="feed-section" id="coordinates-section">
+                <!-- Coordinate Converter Card -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <div class="story-info">
+                            <h3>Coordinate Converter</h3>
+                            <p>Polar ↔ Rectangular conversion</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <!-- Conversion Mode Toggle -->
+                        <div class="coordinate-mode-toggle">
+                            <button class="mode-btn active" data-mode="polar-to-rect">
+                                <i class="fas fa-compass"></i>
+                                <span>Polar → Rectangular</span>
+                            </button>
+                            <button class="mode-btn" data-mode="rect-to-polar">
+                                <i class="fas fa-crosshairs"></i>
+                                <span>Rectangular → Polar</span>
+                            </button>
+                        </div>
+
+                        <!-- Input Section -->
+                        <div class="coordinate-converter">
+                            <!-- Polar to Rectangular Inputs -->
+                            <div class="input-group active" id="polar-inputs">
+                                <div class="coordinate-inputs">
+                                    <div class="input-field">
+                                        <label>Magnitude (r)</label>
+                                        <input type="number" id="polar-r" placeholder="5" step="any">
+                                        <span class="input-unit">units</span>
+                                    </div>
+                                    <div class="input-field">
+                                        <label>Angle (θ)</label>
+                                        <input type="number" id="polar-theta" placeholder="53.13" step="any">
+                                        <span class="input-unit">degrees</span>
+                                    </div>
+                                </div>
+                                <div class="input-explanation">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Enter magnitude and angle to get (x, y) coordinates</span>
+                                </div>
+                            </div>
+
+                            <!-- Rectangular to Polar Inputs -->
+                            <div class="input-group" id="rect-inputs">
+                                <div class="coordinate-inputs">
+                                    <div class="input-field">
+                                        <label>X coordinate</label>
+                                        <input type="number" id="rect-x" placeholder="3" step="any">
+                                        <span class="input-unit">units</span>
+                                    </div>
+                                    <div class="input-field">
+                                        <label>Y coordinate</label>
+                                        <input type="number" id="rect-y" placeholder="4" step="any">
+                                        <span class="input-unit">units</span>
+                                    </div>
+                                </div>
+                                <div class="input-explanation">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Enter x and y coordinates to get magnitude and angle</span>
+                                </div>
+                            </div>
+
+                            <!-- Convert Button -->
+                            <button class="convert-btn" id="coordinate-convert">
+                                <i class="fas fa-exchange-alt"></i>
+                                Convert
+                            </button>
+
+                            <!-- Result Display -->
+                            <div class="coordinate-result" id="coordinate-result">
+                                <div class="result-header">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Result</span>
+                                </div>
+                                <div class="result-display">
+                                    <div class="result-value" id="result-text">
+                                        Enter values and click Convert
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- History Section -->
             <section class="feed-section" id="history-section">
                 <div class="story-card">
@@ -766,5 +861,6 @@
     <script src="js/matrix-calculator.js"></script>
     <script src="js/equation-solver.js"></script>
     <script src="js/ig-ui-handler.js"></script>
+    <script src="js/coordinate-converter.js"></script>
 </body>
 </html>

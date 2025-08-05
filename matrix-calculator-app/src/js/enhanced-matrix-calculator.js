@@ -300,8 +300,8 @@ class EnhancedMatrixCalculator {
         result = this.crossProduct3D(vecA, vecB);
         description = `3D Cross Product (A × B)`;
         
-        // Convert back to matrix format for display
-        result = [[this.formatNumber(result[0])], [this.formatNumber(result[1])], [this.formatNumber(result[2])]];
+        // Convert to matrix format for display (keep as numbers, don't format yet)
+        result = [[result[0]], [result[1]], [result[2]]];
       }
     } else {
       throw new Error("Cross product is only defined for 2D or 3D vectors");
@@ -668,6 +668,20 @@ class EnhancedMatrixCalculator {
   /**
    * Format number to 2 decimal places
    */
+
+  /**
+   * Determine content length category for auto-sizing
+   */
+  getContentLengthCategory(value) {
+    const str = String(value);
+    const length = str.length;
+    
+    if (length <= 4) return 'small';
+    if (length <= 8) return 'medium';
+    if (length <= 12) return 'large';
+    return 'extra-large';
+  }
+
   formatNumber(value) {
     if (typeof value !== 'number' || isNaN(value)) {
       return '0.00';
@@ -738,21 +752,9 @@ class EnhancedMatrixCalculator {
     if (!matrixData.isMatrix) {
       return `
         <div class="matrix-result-display">
-          <div class="result-bracket-container">
-            <div class="result-bracket left-bracket">
-              <div class="result-bracket-top"></div>
-              <div class="result-bracket-middle"></div>
-              <div class="result-bracket-bottom"></div>
-            </div>
-            <div class="matrix-result-grid size-1x1">
-              <div class="result-value scalar ${matrixData.type}" title="${matrixData.label}: ${matrixData.formatted}">
-                ${matrixData.formatted}
-              </div>
-            </div>
-            <div class="result-bracket right-bracket">
-              <div class="result-bracket-top"></div>
-              <div class="result-bracket-middle"></div>
-              <div class="result-bracket-bottom"></div>
+          <div class="matrix-result-grid">
+            <div class="result-value scalar">
+              ${matrixData.formatted}
             </div>
           </div>
           <div class="result-matrix-label">${matrixData.label}</div>
@@ -764,10 +766,10 @@ class EnhancedMatrixCalculator {
     let cellsHTML = '';
 
     if (matrixData.type === 'vector') {
-      // Handle vector display
+      // Handle vector display - vertical stack for 3D cross product
       for (let j = 0; j < matrixData.cols; j++) {
         cellsHTML += `
-          <div class="result-value vector matrix-cell" title="${matrixData.label}[${j+1}]: ${matrixData.formatted[j]}">
+          <div class="result-value vector matrix-cell">
             ${matrixData.formatted[j]}
           </div>
         `;
@@ -777,7 +779,7 @@ class EnhancedMatrixCalculator {
       for (let i = 0; i < matrixData.rows; i++) {
         for (let j = 0; j < matrixData.cols; j++) {
           cellsHTML += `
-            <div class="result-value matrix matrix-cell" title="${matrixData.label}[${i+1},${j+1}]: ${matrixData.formatted[i][j]}">
+            <div class="result-value matrix matrix-cell">
               ${matrixData.formatted[i][j]}
             </div>
           `;
@@ -787,22 +789,10 @@ class EnhancedMatrixCalculator {
 
     return `
       <div class="matrix-result-display">
-        <div class="result-bracket-container">
-          <div class="result-bracket left-bracket">
-            <div class="result-bracket-top"></div>
-            <div class="result-bracket-middle"></div>
-            <div class="result-bracket-bottom"></div>
-          </div>
-          <div class="matrix-result-grid ${sizeClass}">
-            ${cellsHTML}
-          </div>
-          <div class="result-bracket right-bracket">
-            <div class="result-bracket-top"></div>
-            <div class="result-bracket-middle"></div>
-            <div class="result-bracket-bottom"></div>
-          </div>
+        <div class="matrix-result-grid">
+          ${cellsHTML}
         </div>
-        <div class="result-matrix-label">${matrixData.label} (${matrixData.dimensions})</div>
+        <div class="result-matrix-label">${matrixData.label}</div>
       </div>
     `;
   }

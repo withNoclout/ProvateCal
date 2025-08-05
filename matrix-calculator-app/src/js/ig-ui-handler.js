@@ -798,7 +798,7 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Display symbolic results in enhanced matrix bracket format
+   * Display 3D Cross Product Result with clean minimal design
    */
   displaySymbolicResult(operationResult) {
     const resultContainer = document.getElementById('matrix-equals-section');
@@ -806,41 +806,36 @@ class IGMatrixCalculatorUI {
 
     console.log('🔍 DISPLAYING RESULT:', operationResult);
 
-    // Simple, direct display for cross product results
+    // Clean minimal 3D Cross Product Result Display
     if (Array.isArray(operationResult.result) && operationResult.result.length === 3) {
-      // Build simple HTML directly
       const resultHTML = `
-        <div class="simple-cross-result">
-          <h3>Cross Product Result</h3>
-          <div class="vector-display">
-            <div class="vector-bracket">[</div>
-            <div class="vector-components">
-              <div class="component">
-                <span class="component-label">i:</span>
-                <span class="component-value">${operationResult.result[0]}</span>
-              </div>
-              <div class="component">
-                <span class="component-label">j:</span>
-                <span class="component-value">${operationResult.result[1]}</span>
-              </div>
-              <div class="component">
-                <span class="component-label">k:</span>
-                <span class="component-value">${operationResult.result[2]}</span>
-              </div>
+        <div class="cross-product-result-clean">
+          <div class="clean-result-layout">
+            <div class="equals-symbol-clean">=</div>
+            <div class="result-numbers-stack">
+              ${operationResult.result.map((value, index) => `
+                <div class="result-number-clean">${value}</div>
+              `).join('')}
             </div>
-            <div class="vector-bracket">]</div>
+          </div>
+          <div class="result-label-clean">
+            3D Cross Product (A × B) (3×1)
           </div>
         </div>
       `;
       
       resultContainer.innerHTML = resultHTML;
+      
     } else {
-      // Scalar result
+      // Scalar result with clean styling
       resultContainer.innerHTML = `
-        <div class="simple-cross-result">
-          <h3>Result</h3>
-          <div class="scalar-display">
-            <span class="scalar-value">${operationResult.result}</span>
+        <div class="cross-product-result-clean">
+          <div class="clean-result-layout">
+            <div class="equals-symbol-clean">=</div>
+            <div class="scalar-number-clean">${operationResult.result}</div>
+          </div>
+          <div class="result-label-clean">
+            Scalar Result
           </div>
         </div>
       `;
@@ -849,6 +844,39 @@ class IGMatrixCalculatorUI {
     // Show the result container
     resultContainer.style.display = 'block';
     resultContainer.classList.add('show');
+  }
+
+  /**
+   * Add copy-to-clipboard functionality to result boxes
+   */
+  addCopyFunctionality(container) {
+    const resultBoxes = container.querySelectorAll('.result-value-box, .scalar-result-box');
+    
+    resultBoxes.forEach(box => {
+      box.addEventListener('click', async () => {
+        const value = box.querySelector('.result-number').textContent;
+        
+        try {
+          await navigator.clipboard.writeText(value);
+          
+          // Visual feedback
+          box.classList.add('copied');
+          const originalContent = box.innerHTML;
+          box.innerHTML = '<span class="copy-feedback">Copied!</span>';
+          
+          setTimeout(() => {
+            box.innerHTML = originalContent;
+            box.classList.remove('copied');
+          }, 1500);
+          
+        } catch (err) {
+          console.error('Failed to copy:', err);
+        }
+      });
+      
+      // Add hover tooltip
+      box.title = 'Click to copy value';
+    });
   }
 
   /**
