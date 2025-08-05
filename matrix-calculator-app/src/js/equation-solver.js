@@ -8,6 +8,52 @@
 
 class EquationSolver {
   /**
+   * Linear System Solver using Gaussian Elimination
+   * Compatible with the provided use case format
+   */
+  solveLinearSystem(A, B) {
+    // Make copies to avoid modifying original arrays
+    const matrix = A.map(row => [...row]);
+    const constants = [...B];
+    const n = matrix.length;
+
+    // Augment the matrix
+    for (let i = 0; i < n; i++) {
+      matrix[i].push(constants[i]);
+    }
+
+    // Gaussian Elimination
+    for (let i = 0; i < n; i++) {
+      // Make the diagonal element 1
+      let factor = matrix[i][i];
+      if (Math.abs(factor) < 1e-10) {
+        throw new Error("No unique solution or infinite solutions.");
+      }
+      
+      for (let j = 0; j <= n; j++) {
+        matrix[i][j] = matrix[i][j] / factor;
+      }
+
+      // Eliminate other rows
+      for (let k = 0; k < n; k++) {
+        if (k === i) continue;
+        let ratio = matrix[k][i];
+        for (let j = 0; j <= n; j++) {
+          matrix[k][j] -= ratio * matrix[i][j];
+        }
+      }
+    }
+
+    // Extract results
+    const result = [];
+    for (let i = 0; i < n; i++) {
+      result.push(matrix[i][n]);
+    }
+
+    return result;
+  }
+
+  /**
    * Main solve method - determines appropriate solver based on system size
    */
   solve(equationData) {

@@ -1547,6 +1547,73 @@ body {
   transition: all 0.2s ease;
 }
 
+/* Remove number input spinners for coordinate converter */
+.input-field input[type=number]::-webkit-inner-spin-button,
+.input-field input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  display: none;
+  visibility: hidden;
+}
+
+.input-field input[type=number] {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Additional Firefox spinner removal for coordinate inputs */
+.input-field input[type=number]::-moz-spinner,
+.input-field input[type=number]::-moz-spinner-up,
+.input-field input[type=number]::-moz-spinner-down {
+  -moz-appearance: none;
+  display: none;
+  visibility: hidden;
+}
+
+/* Target specific coordinate input IDs for maximum compatibility */
+#polar-r::-webkit-inner-spin-button,
+#polar-r::-webkit-outer-spin-button,
+#polar-theta::-webkit-inner-spin-button,
+#polar-theta::-webkit-outer-spin-button,
+#rect-x::-webkit-inner-spin-button,
+#rect-x::-webkit-outer-spin-button,
+#rect-y::-webkit-inner-spin-button,
+#rect-y::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#polar-r,
+#polar-theta,
+#rect-x,
+#rect-y {
+  -moz-appearance: textfield !important;
+  -webkit-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+#polar-r::-moz-spinner,
+#polar-r::-moz-spinner-up,
+#polar-r::-moz-spinner-down,
+#polar-theta::-moz-spinner,
+#polar-theta::-moz-spinner-up,
+#polar-theta::-moz-spinner-down,
+#rect-x::-moz-spinner,
+#rect-x::-moz-spinner-up,
+#rect-x::-moz-spinner-down,
+#rect-y::-moz-spinner,
+#rect-y::-moz-spinner-up,
+#rect-y::-moz-spinner-down {
+  -moz-appearance: none !important;
+  display: none !important;
+  visibility: hidden !important;
+}
+
 .input-field input:focus {
   outline: none;
   border-color: var(--primary);

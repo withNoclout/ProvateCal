@@ -646,6 +646,7 @@ class IGMatrixCalculatorUI {
       const equationData = this.getEquationData();
       
       if (!this.validateEquationData(equationData)) {
+        this.displayError('equation', 'Please enter valid equation data');
         return;
       }
 
@@ -659,10 +660,15 @@ class IGMatrixCalculatorUI {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const solver = new EquationSolver();
-      const solution = solver.solveLinearSystem(equationData.equations);
+      const solution = solver.solve(equationData); // Fixed: use 'solve' method instead of 'solveLinearSystem'
 
       this.displayEquationResults(solution);
-      this.addToHistory('equation', equationData, solution);
+      
+      // Show the results section
+      const resultsSection = document.getElementById('equation-results');
+      if (resultsSection) {
+        resultsSection.style.display = 'block';
+      }
 
       // Reset button
       solveBtn.innerHTML = originalText;
@@ -671,6 +677,11 @@ class IGMatrixCalculatorUI {
     } catch (error) {
       this.displayError('equation', error.message);
       console.error('Equation solving error:', error);
+      
+      // Reset button
+      const solveBtn = document.getElementById('solve-equation');
+      solveBtn.innerHTML = '<i class="fas fa-calculator"></i> <span>Solve System</span>';
+      solveBtn.disabled = false;
     }
   }
 
@@ -798,7 +809,7 @@ class IGMatrixCalculatorUI {
   }
 
   /**
-   * Display 3D Cross Product Result with clean minimal design
+   * Display 3D Cross Product Result with same styling as numeric results
    */
   displaySymbolicResult(operationResult) {
     const resultContainer = document.getElementById('matrix-equals-section');
@@ -806,44 +817,36 @@ class IGMatrixCalculatorUI {
 
     console.log('🔍 DISPLAYING RESULT:', operationResult);
 
-    // Clean minimal 3D Cross Product Result Display
+    // Use standard result styling to match numeric cross products
     if (Array.isArray(operationResult.result) && operationResult.result.length === 3) {
       const resultHTML = `
-        <div class="cross-product-result-clean">
-          <div class="clean-result-layout">
-            <div class="equals-symbol-clean">=</div>
-            <div class="result-numbers-stack">
-              ${operationResult.result.map((value, index) => `
-                <div class="result-number-clean">${value}</div>
-              `).join('')}
-            </div>
+        <div class="equals-symbol">=</div>
+        <div class="matrix-display">
+          <div class="matrix-bracket left-bracket">[</div>
+          <div class="matrix-content">
+            ${operationResult.result.map((value, index) => `
+              <div class="result-value">${value}</div>
+            `).join('')}
           </div>
-          <div class="result-label-clean">
-            3D Cross Product (A × B) (3×1)
-          </div>
+          <div class="matrix-bracket right-bracket">]</div>
         </div>
       `;
       
       resultContainer.innerHTML = resultHTML;
       
     } else {
-      // Scalar result with clean styling
+      // Scalar result with standard styling
       resultContainer.innerHTML = `
-        <div class="cross-product-result-clean">
-          <div class="clean-result-layout">
-            <div class="equals-symbol-clean">=</div>
-            <div class="scalar-number-clean">${operationResult.result}</div>
-          </div>
-          <div class="result-label-clean">
-            Scalar Result
-          </div>
-        </div>
+        <div class="equals-symbol">=</div>
+        <div class="result-value">${operationResult.result}</div>
       `;
     }
     
-    // Show the result container
-    resultContainer.style.display = 'block';
-    resultContainer.classList.add('show');
+    // Show the result container with standard animation
+    resultContainer.style.display = 'flex';
+    setTimeout(() => {
+      resultContainer.classList.add('show');
+    }, 100);
   }
 
   /**

@@ -1736,24 +1736,40 @@ body {
 .equation-input {
   width: 80px;
   height: 50px;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sharp);
+  border: 2px solid var(--border-color, #374151);
+  border-radius: var(--border-radius-sm, 8px);
   text-align: center;
-  font-size: var(--text-base);
+  font-size: var(--text-base, 16px);
   font-weight: 600;
-  background: var(--glass-bg);
-  color: var(--text-primary);
-  transition: var(--transition-glow);
-  font-family: var(--font-mono);
+  background: var(--bg-secondary, #1f2937);
+  color: #ffffff !important; /* Force white text */
+  transition: all 0.3s ease;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
 .equation-input:focus {
   outline: none;
-  border-color: var(--accent-teal);
-  box-shadow: 
-    0 0 0 2px rgba(20, 184, 166, 0.2),
-    inset 0 0 0 1px var(--accent-teal);
-  background: rgba(20, 184, 166, 0.05);
+  border-color: var(--primary-color, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: var(--bg-primary, #111827);
+  color: #ffffff !important; /* Force white text on focus */
+}
+
+.equation-input:hover {
+  border-color: var(--primary-hover, #2563eb);
+  background: var(--bg-primary, #111827);
+  color: #ffffff !important; /* Force white text on hover */
+}
+
+.equation-input.error {
+  border-color: var(--error-color, #ef4444);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  color: #ffffff !important; /* Force white text on error */
+}
+
+.equation-input::placeholder {
+  color: #9ca3af !important; /* Light gray placeholder */
+  opacity: 0.7;
 }
 
 .equation-equals,
@@ -2468,6 +2484,55 @@ input.numeric-text,
   }
 }
 
+/* UNIVERSAL NUMBER INPUT SPINNER REMOVAL - HIGHEST PRIORITY */
+/* Force removal of all number input spinners across all contexts */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+*[type="number"]::-webkit-inner-spin-button,
+*[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Universal Firefox spinner removal */
+input[type="number"],
+input[type=number],
+*[type="number"],
+*[type=number] {
+  -moz-appearance: textfield !important;
+  -webkit-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* Firefox specific spinner pseudo-elements */
+input[type="number"]::-moz-spinner,
+input[type="number"]::-moz-spinner-up,
+input[type="number"]::-moz-spinner-down,
+input[type=number]::-moz-spinner,
+input[type=number]::-moz-spinner-up,
+input[type=number]::-moz-spinner-down {
+  -moz-appearance: none !important;
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* IE/Edge legacy spinner removal */
+input[type="number"]::-ms-clear,
+input[type="number"]::-ms-reveal,
+input[type=number]::-ms-clear,
+input[type=number]::-ms-reveal {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Animation classes */
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -2957,29 +3022,38 @@ body {
 .equation-input {
   width: 80px;
   height: 40px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--border-color, #374151);
+  border-radius: var(--border-radius-sm, 8px);
   text-align: center;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm, 14px);
   font-weight: 600;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--bg-secondary, #1f2937);
+  color: #ffffff !important; /* Force white text */
   transition: all 0.2s ease;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
 .equation-input:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  border-color: var(--primary-color, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  color: #ffffff !important; /* Force white text on focus */
 }
 
 .equation-input:hover {
-  border-color: var(--primary-hover);
+  border-color: var(--primary-hover, #2563eb);
+  color: #ffffff !important; /* Force white text on hover */
 }
 
 .equation-input.error {
-  border-color: var(--error-color);
-  box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+  border-color: var(--error-color, #ef4444);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  color: #ffffff !important; /* Force white text on error */
+}
+
+.equation-input::placeholder {
+  color: #9ca3af !important; /* Light gray placeholder */
+  opacity: 0.7;
 }
 
 .variable-label {
@@ -3003,6 +3077,92 @@ body {
 .calculation-results {
   display: grid;
   gap: var(--spacing-lg);
+}
+
+/* Equation Results Styling */
+.solution-grid {
+  padding: 1.5rem;
+  background: var(--bg-secondary, #1f2937);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #374151);
+}
+
+.solution-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #374151);
+}
+
+.solution-header h4 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.solution-header.error h4 {
+  color: #ef4444;
+}
+
+.variables-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.variable-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-primary, #111827);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #374151);
+}
+
+.variable-name {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-color, #3b82f6);
+  font-style: italic;
+}
+
+.variable-equals {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 1rem;
+  color: #9ca3af;
+}
+
+.variable-value {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+  min-width: 80px;
+  text-align: center;
+}
+
+.solution-message {
+  text-align: center;
+  color: #ef4444;
+  font-size: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .result-item {
